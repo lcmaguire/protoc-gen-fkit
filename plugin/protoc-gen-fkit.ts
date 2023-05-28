@@ -28,8 +28,10 @@ function parseOption(key: string, value: string | undefined) {
 function generateTs(schema: Schema) {
     // find all messages within the proto.
     let i;
-    for (i = 0; i < schema.files.length; i++) {
-        schema.files[i].messages
+    for (i in schema.files) {
+        for (let j in schema.files[i].messages) {
+            generateCode(schema, schema.files[i].messages[j])
+        }
     }
 }
 
