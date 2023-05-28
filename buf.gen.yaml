@@ -6,7 +6,7 @@ plugins:
   - plugin: buf.build/bufbuild/connect-web
     out: gen
   - name: fkit
-    path: ./plugin/protoc-gen-svelte-compenents.ts
+    path: ./plugin/protoc-gen-fkit.ts
     opt: 
       - target=ts
       - connectImportPath=./proto/example_connectweb
