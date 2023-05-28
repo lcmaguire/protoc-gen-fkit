@@ -9,6 +9,5 @@ plugins:
     path: ./plugin/protoc-gen-fkit.ts
     opt: 
       - target=ts
-      - connectImportPath=./proto/example_connectweb
     out: gen # todo try this being diff path and getting genPath
 
