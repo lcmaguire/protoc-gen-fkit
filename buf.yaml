@@ -3,6 +3,7 @@ build:
   excludes: # https://docs.buf.build/build/usage#excludes
     - vendor
     - node_modules
+    - example/my-app/node_modules/
 breaking:
   use:
     - FILE

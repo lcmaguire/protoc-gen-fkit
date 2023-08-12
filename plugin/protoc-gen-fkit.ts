@@ -40,20 +40,15 @@ function generateTs(schema: Schema) {
   }
 }
 
+// todo use  // let imp = viewComponent.import(message) to ensure type safety
 function generateCode(schema: Schema, message: DescMessage) {
   // generate message for name.
-  const f = schema.generateFile(`${message.name}.Svelte`);
+  const createComponent = schema.generateFile(`Edit${message.name}.Svelte`);
+  createComponent.print(`${ parseTemplate(genHtmlForMessage(message))}`)
 
-  // for all fields in message, iterate over it.
-
-  let html = "\n"
-
-  html += genHtmlForMessage(message)
-
-
-  parseTemplate(html)
-
-  f.print(`${ parseTemplate(html)}`)
+  const viewComponent = schema.generateFile(`View${message.name}.Svelte`);
+  viewComponent.print(`${ parseTemplate(genHtmlViewForMessage(message))}`)
+  
 }
 
 function genHtmlForMessage(message: DescMessage) {
@@ -88,6 +83,9 @@ function genHtmlForMessage(message: DescMessage) {
   return res
 }
 
+/*
+  Change this to insert into html template based upon desired component. 
+*/
 function genHtmlViewForMessage(message: DescMessage) {
   let res = `<h1> ${message.name}</h1>`
 
@@ -104,13 +102,13 @@ function genHtmlViewForMessage(message: DescMessage) {
 
     switch (currentField.scalar) {
       case ScalarType.STRING:
-        res += `<input bind:value={${currentPath}.${currentName}} >`
+        res += `<p> {${currentPath}.${currentName}} </p>`
         break;
       case ScalarType.BOOL:
-        res += `<input type=checkbox  bind:checked={${currentPath}.${currentName}}>`
+        res += `<p> {${currentPath}.${currentName}}  </p>`
         break;
       case ScalarType.INT32 || ScalarType.INT64 || ScalarType.UINT32 || ScalarType.UINT64:
-        res += `<input type=number bind:value={${currentPath}.${currentName}} min=0>`
+        res += `<p> {${currentPath}.${currentName}} </p>`
         break;
       default:
         break;
@@ -120,7 +118,8 @@ function genHtmlViewForMessage(message: DescMessage) {
   return res
 }
 
+
 /*
-  - generate map[name]type ( nested)
-  - then have html templates to parse in based upon type of view
+  generate routes  + actions / db code
+
 */

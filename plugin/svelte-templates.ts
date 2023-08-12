@@ -4,35 +4,20 @@ export function parseTemplate(html: string) {
 
     const getTplate = `
 <script>
-  import { onMount } from "svelte";
-
+  // @ts-nocheck
   export let message;
-  // have the value be exported. then have a seperate 'service' to handle fetching data
 
-  </script>
+</script>
 
-  {#if message != null}
+{#if message != null}
   ${html}
-  {/if}
-  `
+{/if}
+
+`
   return getTplate
 }
 
-export function viewTemplate(html: string) {
+export function page() {
 
-    const getTplate = `
-<script>
-  import { onMount } from "svelte";
-
-  export let message;
-  // have the value be exported. then have a seperate 'service' to handle fetching data
-
-  </script>
-
-  {#if message != null}
-  ${html}
-  {/if}
-  `
-  return getTplate
 }
 
