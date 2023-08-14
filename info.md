@@ -40,14 +40,9 @@ Svelte info
 - load via +page.js in routes
 - should write to lib/...
 
-
 me notes
 
 - ts / type safety
-
-
-
-
 
 Task list 
 
@@ -64,5 +59,24 @@ Decision
 - Routes for action(s)
 - Use JS for now
 
-
 https://github.com/sveltejs/realworld
+
+
+# use
+
+- point to /src dir
+
+things to learn
+
+- way to have the actions within the components be customizatble ( iface or pass in a func)
+- id generation / new struct
+
+
+ideas
+
+- list component / array component
+- env vars / load config based upon env
+- ui improvement
+- auth integration (perhaps func approach)
+- 
+

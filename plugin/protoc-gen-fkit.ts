@@ -43,7 +43,7 @@ function generateTs(schema: Schema) {
 // todo use  // let imp = viewComponent.import(message) to ensure type safety
 function generateCode(schema: Schema, message: DescMessage) {
   // generate message for name.
-  const createComponent = schema.generateFile(`Edit${message.name}.Svelte`);
+  const createComponent = schema.generateFile(`Write${message.name}.Svelte`);
   createComponent.print(`${ parseTemplate(genHtmlForMessage(message))}`)
 
   const viewComponent = schema.generateFile(`View${message.name}.Svelte`);
