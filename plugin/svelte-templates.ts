@@ -19,6 +19,53 @@ export function parseTemplate(html: string) {
   return getTplate
 }
 
+export function parseAllcomponent(messageName: string,) {
+
+  const allTemplate = `
+<script>
+	// @ts-nocheck
+	// @ts-ignore
+
+	import View${messageName} from './${messageName}Fook.svelte';
+	import Write${messageName} from './${messageName}Fook.svelte';
+
+	import { goto } from '$app/navigation';
+
+	// todo do this on successful write ? https://kit.svelte.dev/docs/modules#$app-navigation-invalidateall 
+
+	export let data;
+  export let writeFunc;
+  export let deleteFunc;
+
+	let editable = false;
+
+	function toggle() {
+		editable = !editable;
+	}
+
+</script>
+
+{#if data != null && !editable}
+	<View${messageName} message={data} />
+{/if}
+
+{#if editable }
+	<Write${messageName} bind:message={data} />
+
+	<button on:click={writeFunc}> save </button>
+{/if}
+
+{#if  writeFunc != null }
+	<button on:click={toggle}> edit </button>
+{/if}
+
+<button on:click={deleteFunc}> Delete </button>
+
+  `
+
+return allTemplate
+}
+
 export function page() {
 
 }

@@ -70,6 +70,8 @@ things to learn
 
 - way to have the actions within the components be customizatble ( iface or pass in a func)
 - id generation / new struct
+- lower or uper case for .Svelte
+- format generated code
 
 
 ideas
