@@ -80,3 +80,25 @@ ideas
 - auth integration (perhaps func approach)
 - 
 
+
+
+Tasks
+
+- gen components for showing / binding data
+- path is `{{message}}/uuid`
+- writeFunc, deleteFunc, e.t.c are passed into routes/views
+- camelCase snakeCased names (Done) 
+
+
+refined tasks
+
+- routes ( page.svelte + page.js)
+- firebase stuff
+- delete button component / edit button component
+
+
+
+nice ideas
+
+- html has tag/class of proto path + purpose
+- hidden fields ( e.g. dont show user uuid)

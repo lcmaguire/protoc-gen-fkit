@@ -13,7 +13,7 @@ import { DescMessage, DescMethod, DescService, MethodKind, ScalarType } from "@b
 import type { Schema } from "@bufbuild/protoplugin/ecmascript";
 
 
-import  { parseTemplate } from "./svelte-templates";
+import  { genFirebase, parseTemplate, protoCamelCase } from "./svelte-templates";
 
 
 
@@ -38,6 +38,8 @@ function generateTs(schema: Schema) {
       generateCode(schema, schema.files[i].messages[j])
     }
   }
+
+  genFirebase(schema)
 }
 
 // todo use  // let imp = viewComponent.import(message) to ensure type safety
@@ -48,7 +50,7 @@ function generateCode(schema: Schema, message: DescMessage) {
 
   const viewComponent = schema.generateFile(`View${message.name}.Svelte`);
   viewComponent.print(`${ parseTemplate(genHtmlViewForMessage(message))}`)
-  
+
 }
 
 function genHtmlForMessage(message: DescMessage) {
@@ -62,6 +64,7 @@ function genHtmlForMessage(message: DescMessage) {
     if (currentName == undefined) {
       currentName = currentField.name
     }
+    currentName = protoCamelCase(currentName)
 
     res += "\n"
 
@@ -97,6 +100,7 @@ function genHtmlViewForMessage(message: DescMessage) {
     if (currentName == undefined) {
       currentName = currentField.name
     }
+    currentName = protoCamelCase(currentName)
 
     res += "\n"
 
