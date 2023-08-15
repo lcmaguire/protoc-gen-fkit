@@ -4,7 +4,7 @@ import { Schema } from "@bufbuild/protoplugin"
 
 export function parseTemplate(html: string) {
 
-    const getTplate = `
+  const getTplate = `
 <script>
   // @ts-nocheck
   export let message;
@@ -63,7 +63,7 @@ export function parseAllcomponent(messageName: string,) {
 
   `
 
-return allTemplate
+  return allTemplate
 }
 
 export function protoCamelCase(snakeCase: string): string {
@@ -100,9 +100,8 @@ export function protoCamelCase(snakeCase: string): string {
   return a;
 }
 
-
 // note, this should probably be an external pkg that is imported and initialized via env vars.
-export function genFirebase(schema: Schema){
+export function genFirebase(schema: Schema) {
   const firebaseTemplate = `
   
 // Import the functions you need from the SDKs you need
@@ -137,7 +136,7 @@ const db = getFirestore(app);
 export {app, auth, db};
 `
 
-const firestoreTemplate = `
+  const firestoreTemplate = `
 import { addDoc, getDoc, getDocs, query, updateDoc, type DocumentData, deleteDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -185,7 +184,7 @@ export async function dbDelete(id: string) {
 }
 `
 
-const authTemplate = `
+  const authTemplate = `
 import {GoogleAuthProvider, type User}  from "firebase/auth";
 import {auth} from "./firebase"
 
@@ -207,13 +206,150 @@ function getUser() :User | null{
 export {authenticateRequest, provider, getUser };
 `
 
-let dir = "firebase"
-const firebase = schema.generateFile(`${dir}/firebase.ts`);
-firebase.print(firebaseTemplate)
+  let dir = "firebase"
+  const firebase = schema.generateFile(`${dir}/firebase.ts`);
+  firebase.print(firebaseTemplate)
 
-const firestore = schema.generateFile(`${dir}/firestore.ts`);
-firestore.print(firestoreTemplate)
+  const firestore = schema.generateFile(`${dir}/firestore.ts`);
+  firestore.print(firestoreTemplate)
 
-const auth = schema.generateFile(`${dir}/auth.ts`);
-auth.print(authTemplate)
+  const auth = schema.generateFile(`${dir}/auth.ts`);
+  auth.print(authTemplate)
+}
+
+// todo gen these somewhere
+export function generateActionFuncs(schema: Schema) {
+
+  // messageName
+  const deleteAction = `
+  async function deleteDoc() {
+		try {
+			await dbDelete(data.name);
+		} catch (e) {
+			console.error(e);
+		} finally {
+			console.log('We do cleanup here');
+			goto("/")
+		}
+	}
+
+  const writeFunc = async function writeDoc() {
+		try {
+			await dbSet(data);
+		} catch (e) {
+			console.error(e);
+		} finally {
+			goto("/") 
+		}
+	}
+  `
+}
+
+export function generateRoutes(schema: Schema, messageName: string) {
+
+  let dir = "routes"
+  const viewComponentName = `View${messageName}`
+
+  const listComponentTemplate = `
+  <script>
+  // @ts-ignore
+	import ${viewComponentName} from '$lib/${viewComponentName}.svelte';
+	
+	export let data;
+
+  </script>
+
+  {#if data != null}
+  {#each data.messages as item}
+    <${viewComponentName} message={item}/>
+  {/each}
+ {/if}
+
+  `
+
+  const listComponent = schema.generateFile(`${dir}/${messageName}/+page.svelte`);
+  listComponent.print(listComponentTemplate)
+
+  const listJsTemplate = `
+  import { error } from '@sveltejs/kit';
+
+  import { dbList } from '$lib/firebase/firestore';
+  
+   
+  /** @type {import('./$types').PageLoad} */
+  export async function load() {
+  
+     let messages = await dbList()
+     return { messages: messages}
+  }
+  `
+
+  const listJS = schema.generateFile(`${dir}/${messageName}/+page.js`);
+  listJS.print(listJsTemplate)
+
+  const allComponentName = `All${messageName}`
+
+  const slugComponentTemplate = `
+  <script>
+	// @ts-nocheck
+	// @ts-ignore
+
+	import ${allComponentName} from '$lib/${allComponentName}.svelte';
+
+	import { dbSet, dbDelete } from '$lib/firebase/firestore';
+
+	import { goto } from '$app/navigation';
+
+	// todo do this on successful write ? https://kit.svelte.dev/docs/modules#$app-navigation-invalidateall 
+
+	export let data;
+
+	const writeFunc = async function writeDoc() {
+		try {
+			await dbSet(data);
+		} catch (e) {
+			console.error(e);
+		} finally {
+			goto("/") // todo determie where i would like to go
+		}
+	}
+
+	async function deleteDoc() {
+		try {
+			await dbDelete(data.name);
+		} catch (e) {
+			console.error(e);
+		} finally {
+			console.log('We do cleanup here');
+			goto("/")
+		}
+	}
+</script>
+
+<${allComponentName} data={data} writeFunc={writeFunc} deleteFunc={deleteDoc}/>
+  `
+  const slugComponent = schema.generateFile(`${dir}/${messageName}/[slug]/+page.svelte`);
+  slugComponent.print(slugComponentTemplate)
+
+  const slugJsTemplate = `
+  import { error } from '@sveltejs/kit';
+
+  import { dbReadWithID } from '$lib/firebase/firestore';
+  
+   
+  /** @type {import('./$types').PageLoad} */
+  export async function load({ params }) {
+  
+     let message;
+     try {
+        message = await dbReadWithID(params.slug)
+     } catch (e) {
+        console.error(e);
+     } 
+  
+     return message
+  }
+  `
+  const slugJs = schema.generateFile(`${dir}/${messageName}/[slug]/+page.js`);
+  slugJs.print(slugJsTemplate)
 }

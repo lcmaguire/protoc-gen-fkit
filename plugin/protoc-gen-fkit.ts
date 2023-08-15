@@ -13,7 +13,7 @@ import { DescMessage, DescMethod, DescService, MethodKind, ScalarType } from "@b
 import type { Schema } from "@bufbuild/protoplugin/ecmascript";
 
 
-import  { genFirebase, parseAllcomponent, parseTemplate, protoCamelCase } from "./svelte-templates";
+import { genFirebase, parseAllcomponent, parseTemplate, protoCamelCase } from "./svelte-templates";
 
 
 
@@ -49,11 +49,11 @@ function generateCode(schema: Schema, message: DescMessage) {
 
   const writeComponentPath = `Write${messageName}.svelte`
   const writeComponent = schema.generateFile(writeComponentPath);
-  writeComponent.print(`${ parseTemplate(genHtmlForMessage(message))}`)
+  writeComponent.print(`${parseTemplate(genHtmlForMessage(message))}`)
 
   const viewComponentPath = `View${messageName}.svelte`
   const viewComponent = schema.generateFile(viewComponentPath);
-  viewComponent.print(`${ parseTemplate(genHtmlViewForMessage(message))}`)
+  viewComponent.print(`${parseTemplate(genHtmlViewForMessage(message))}`)
 
   const allComponentPath = `All${messageName}.svelte`
   const allComponent = schema.generateFile(allComponentPath);
