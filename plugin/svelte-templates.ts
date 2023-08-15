@@ -247,6 +247,8 @@ export function generateActionFuncs(schema: Schema) {
 
 export function generateRoutes(schema: Schema, messageName: string) {
 
+  // todo have this be lower case.
+
   let dir = "routes"
   const viewComponentName = `View${messageName}`
 
@@ -327,7 +329,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 
 <${allComponentName} data={data} writeFunc={writeFunc} deleteFunc={deleteDoc}/>
   `
-  
+
   const slugComponent = schema.generateFile(`${dir}/${messageName}/[slug]/+page.svelte`);
   slugComponent.print(slugComponentTemplate)
 

@@ -2,12 +2,12 @@
 version: v1
 plugins:
   - plugin: buf.build/bufbuild/es
-    out: gen
+    out: gen/lib/proto
   - plugin: buf.build/bufbuild/connect-web
-    out: gen
+    out: gen/lib/proto
   - name: fkit
     path: ./plugin/protoc-gen-fkit.ts
     opt: 
       - target=ts
-    out: gen # todo try this being diff path and getting genPath
+    out: gen
 
