@@ -3,10 +3,8 @@
 	// @ts-nocheck
 	// @ts-ignore
 
-	import ViewFook from './FookFook.svelte';
-	import WriteFook from './FookFook.svelte';
-
-	import { goto } from '$app/navigation';
+	import ViewFook from './ViewFook.svelte';
+	import WriteFook from './WriteFook.svelte';
 
 	// todo do this on successful write ? https://kit.svelte.dev/docs/modules#$app-navigation-invalidateall 
 

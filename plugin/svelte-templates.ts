@@ -21,15 +21,15 @@ export function parseTemplate(html: string) {
 
 export function parseAllcomponent(messageName: string,) {
 
+  const viewName = `View${messageName}`
+  const writeName = `Write${messageName}`
   const allTemplate = `
 <script>
 	// @ts-nocheck
 	// @ts-ignore
 
-	import View${messageName} from './${messageName}Fook.svelte';
-	import Write${messageName} from './${messageName}Fook.svelte';
-
-	import { goto } from '$app/navigation';
+	import ${viewName} from './${viewName}.svelte';
+	import ${writeName} from './${writeName}.svelte';
 
 	// todo do this on successful write ? https://kit.svelte.dev/docs/modules#$app-navigation-invalidateall 
 
@@ -46,11 +46,11 @@ export function parseAllcomponent(messageName: string,) {
 </script>
 
 {#if data != null && !editable}
-	<View${messageName} message={data} />
+	<${viewName} message={data} />
 {/if}
 
 {#if editable }
-	<Write${messageName} bind:message={data} />
+	<${writeName} bind:message={data} />
 
 	<button on:click={writeFunc}> save </button>
 {/if}
@@ -64,25 +64,6 @@ export function parseAllcomponent(messageName: string,) {
   `
 
 return allTemplate
-}
-
-export function page() {
-
-}
-
-// todo see how proto generates fieldnames.
-export function snakeCaseToCamelCase(input: string) {
-  for (let i = 0; i < input.length; i++) {
-    let res = input.replace("_", "")
-    if (res == input) {
-      continue
-    }
-    let undrescoreIndex = input.indexOf("_")
-    input = res
-    input = input.substring(0, undrescoreIndex) + input.charAt(undrescoreIndex).toLocaleUpperCase() + input.substring(undrescoreIndex + 1)
-
-  }
-  return input
 }
 
 export function protoCamelCase(snakeCase: string): string {
@@ -126,6 +107,8 @@ export function genFirebase(schema: Schema){
   
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "@firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -145,22 +128,23 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-export {app};
+// Initialize firebase authentication.
+const auth = getAuth(app);
+
+// Initialzie firestore db.
+const db = getFirestore(app);
+
+export {app, auth, db};
 `
 
 const firestoreTemplate = `
-import { addDoc, getDoc, getDocs, query, updateDoc, type DocumentData, deleteDoc, getFirestore } from "firebase/firestore";
-import { app } from "./firebase";
+import { addDoc, getDoc, getDocs, query, updateDoc, type DocumentData, deleteDoc } from "firebase/firestore";
+import { db } from "./firebase";
 
 import { collection, doc, setDoc } from "firebase/firestore";
 
 
 const collectionPath = "test"
-
-// Initialzie firestore db.
-const db = getFirestore(app);
-
-export {db}
 
 export async function dbReadWithID(id: string) {
     const docRef = doc(db, collectionPath, id);
@@ -202,11 +186,8 @@ export async function dbDelete(id: string) {
 `
 
 const authTemplate = `
-import {getAuth, GoogleAuthProvider, type User}  from "firebase/auth";
-import {app} from "./firebase"
-
-// Initialize firebase authentication.
-const auth = getAuth(app);
+import {GoogleAuthProvider, type User}  from "firebase/auth";
+import {auth} from "./firebase"
 
 async function authenticateRequest(user : User){
     let token = await user.getIdToken(false)
@@ -223,8 +204,7 @@ function getUser() :User | null{
     return auth.currentUser
 }
 
-
-export { auth, authenticateRequest, provider, getUser };
+export {authenticateRequest, provider, getUser };
 `
 
 let dir = "firebase"

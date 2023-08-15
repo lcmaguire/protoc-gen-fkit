@@ -1,9 +1,6 @@
 
-import {getAuth, GoogleAuthProvider, type User}  from "firebase/auth";
-import {app} from "./firebase"
-
-// Initialize firebase authentication.
-const auth = getAuth(app);
+import {GoogleAuthProvider, type User}  from "firebase/auth";
+import {auth} from "./firebase"
 
 async function authenticateRequest(user : User){
     let token = await user.getIdToken(false)
@@ -20,6 +17,5 @@ function getUser() :User | null{
     return auth.currentUser
 }
 
-
-export { auth, authenticateRequest, provider, getUser };
+export {authenticateRequest, provider, getUser };
 

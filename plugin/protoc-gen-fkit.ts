@@ -47,15 +47,15 @@ function generateCode(schema: Schema, message: DescMessage) {
   // generate message for name.
   const messageName = message.name
 
-  const writeComponentPath = `Write${messageName}.Svelte`
+  const writeComponentPath = `Write${messageName}.svelte`
   const writeComponent = schema.generateFile(writeComponentPath);
   writeComponent.print(`${ parseTemplate(genHtmlForMessage(message))}`)
 
-  const viewComponentPath = `View${messageName}.Svelte`
+  const viewComponentPath = `View${messageName}.svelte`
   const viewComponent = schema.generateFile(viewComponentPath);
   viewComponent.print(`${ parseTemplate(genHtmlViewForMessage(message))}`)
 
-  const allComponentPath = `All${messageName}.Svelte`
+  const allComponentPath = `All${messageName}.svelte`
   const allComponent = schema.generateFile(allComponentPath);
   allComponent.print(parseAllcomponent(messageName))
 

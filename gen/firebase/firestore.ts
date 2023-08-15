@@ -1,16 +1,11 @@
 
-import { addDoc, getDoc, getDocs, query, updateDoc, type DocumentData, deleteDoc, getFirestore } from "firebase/firestore";
-import { app } from "./firebase";
+import { addDoc, getDoc, getDocs, query, updateDoc, type DocumentData, deleteDoc } from "firebase/firestore";
+import { db } from "./firebase";
 
 import { collection, doc, setDoc } from "firebase/firestore";
 
 
 const collectionPath = "test"
-
-// Initialzie firestore db.
-const db = getFirestore(app);
-
-export {db}
 
 export async function dbReadWithID(id: string) {
     const docRef = doc(db, collectionPath, id);
