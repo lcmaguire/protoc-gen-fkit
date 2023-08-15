@@ -206,7 +206,7 @@ function getUser() :User | null{
 export {authenticateRequest, provider, getUser };
 `
 
-  let dir = "firebase"
+  let dir = "lib/firebase"
   const firebase = schema.generateFile(`${dir}/firebase.ts`);
   firebase.print(firebaseTemplate)
 
@@ -278,7 +278,6 @@ export function generateRoutes(schema: Schema, messageName: string) {
    
   /** @type {import('./$types').PageLoad} */
   export async function load() {
-  
      let messages = await dbList()
      return { messages: messages}
   }
@@ -328,6 +327,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 
 <${allComponentName} data={data} writeFunc={writeFunc} deleteFunc={deleteDoc}/>
   `
+  
   const slugComponent = schema.generateFile(`${dir}/${messageName}/[slug]/+page.svelte`);
   slugComponent.print(slugComponentTemplate)
 
