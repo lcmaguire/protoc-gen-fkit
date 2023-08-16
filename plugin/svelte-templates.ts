@@ -76,12 +76,12 @@ export function parseCreateComponent(messageName: string,) {
 
 	import ${writeName} from './${writeName}.svelte';
 
-	export let data; // probably doesn't need to be exported
+	export let message;
   export let writeFunc;
 
 </script>
 
-	<${writeName} bind:message={data} />
+	<${writeName} bind:message={message} />
 
 	<button on:click={writeFunc}> save </button>
 
@@ -384,7 +384,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 
   const createComponentName = `Create${messageName}`
 
-  const createComponentTemplate = `
+  const newComponentTemplate = `
   
   <script>
 	// @ts-nocheck
@@ -404,7 +404,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 		} catch (e) {
 			console.error(e);
 		} finally {
-			goto(\`/fook/" + \${uid}\`) 
+			goto(\`/${messageName}/\${uid}\`) 
 		}
 	}
 </script>
@@ -413,5 +413,5 @@ export function generateRoutes(schema: Schema, messageName: string) {
   
 `
   const newComponent = schema.generateFile(`${dir}/new/+page.svelte`);
-  newComponent.print(slugComponentTemplate)
+  newComponent.print(newComponentTemplate)
 }

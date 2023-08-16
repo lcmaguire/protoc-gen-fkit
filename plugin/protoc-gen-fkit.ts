@@ -60,7 +60,7 @@ function generateCode(schema: Schema, message: DescMessage) {
   allComponent.print(parseAllcomponent(messageName))
 
   const createComponentPath = `lib/Create${messageName}.svelte`
-  const createComponent = schema.generateFile(allComponentPath);
+  const createComponent = schema.generateFile(createComponentPath);
   createComponent.print(parseCreateComponent(messageName))
 
   // todo have this be optional via config.
