@@ -167,46 +167,43 @@ import { db } from "./firebase";
 
 import { collection, doc, setDoc } from "firebase/firestore";
 
-
-const collectionPath = "test"
-
-export async function dbReadWithID(id: string) {
-    const docRef = doc(db, collectionPath, id);
-    const docSnap = await getDoc(docRef);
-    return docSnap.data()
+export async function dbReadWithID(docPath: string) {
+  const docRef = doc(db, docPath);
+  const docSnap = await getDoc(docRef);
+  return docSnap.data()
 }
 
-// todo set this up to be based upon id or other field
-export async function dbList() {
-    let response: any[] = []
-    const querySnapshot = await getDocs(collection(db, collectionPath));
-    querySnapshot.forEach((doc) => {
-        response.push(doc.data())
-    });
-    return response
+// todo set this up to be based upon id or other fields
+export async function dbList(collectionPath: string) {
+  let response: any[] = []
+  const querySnapshot = await getDocs(collection(db, collectionPath));
+  querySnapshot.forEach((doc) => {
+      response.push(doc.data())
+  });
+  return response
 }
 
-export async function dbAdd(input: any): Promise<string> {
-    const docRef = await addDoc(collection(db, collectionPath), input)
-    return docRef.id
+export async function dbAdd(collectionPath: string, input: any): Promise<string> {
+  const docRef = await addDoc(collection(db, collectionPath), input)
+  return docRef.id
 }
 
-export async function dbSet(input: { name?: any; }) {
-    console.log("in dbSet")
-    const docRef = doc(db, collectionPath, input.name);
-    await setDoc(docRef, input)
-    return docRef.id
+export async function dbSet(docPath: string, input: any) {
+  const docRef = doc(db, docPath);
+  await setDoc(docRef, input)
+  return docRef.id
 }
 
-export async function dbUpdate(input: { name?: any; }) {
-    const docRef = doc(db, collectionPath, input.name);
-    await updateDoc(docRef, { input });
+export async function dbUpdate(docPath: string, input: any) {
+  const docRef = doc(db, docPath);
+  await updateDoc(docRef, { input });
 }
 
-export async function dbDelete(id: string) {
-    const docRef = doc(db, collectionPath, id);
-    await deleteDoc(docRef)
+export async function dbDelete(docPath: string) {
+  const docRef = doc(db, docPath);
+  await deleteDoc(docRef)
 }
+
 `
 
   const authTemplate = `
@@ -272,10 +269,10 @@ export function generateActionFuncs(schema: Schema) {
 
 export function generateRoutes(schema: Schema, messageName: string) {
 
-  // todo have this be lower case.
+  let lowerCaseMessageName = messageName.toLowerCase()
 
   //toLowerC
-  let dir = `routes/${messageName.toLowerCase()}`
+  let dir = `routes/${lowerCaseMessageName}`
   const viewComponentName = `View${messageName}`
 
   const listComponentTemplate = `
@@ -299,14 +296,15 @@ export function generateRoutes(schema: Schema, messageName: string) {
   listComponent.print(listComponentTemplate)
 
   const listJsTemplate = `
+  // @ts-nocheck
+  
   import { error } from '@sveltejs/kit';
 
   import { dbList } from '$lib/firebase/firestore';
   
    
-  /** @type {import('./$types').PageLoad} */
   export async function load() {
-     let messages = await dbList()
+     let messages = await dbList("${lowerCaseMessageName}")
      return { messages: messages}
   }
   `
@@ -333,23 +331,21 @@ export function generateRoutes(schema: Schema, messageName: string) {
 
 	const writeFunc = async function writeDoc() {
 		try {
-			await dbSet(data.message);
+			await dbSet(\`/${lowerCaseMessageName}/\${data.uid}\`, data.message);
 		} catch (e) {
 			console.error(e);
 		} finally {
-      goto(\`/${messageName.toLowerCase()}/\${uid}\`) 
+      goto(\`/${lowerCaseMessageName}/\${data.uid}\`) 
 		}
 	}
 
 	async function deleteDoc() {
 		try {
-			await dbDelete(data.uid);
+			await dbDelete(\`/${lowerCaseMessageName}/\${data.uid}\`);
 		} catch (e) {
 			console.error(e);
 		} finally {
-			console.log('We do cleanup here');
-			goto("/")
-      goto("/${messageName.toLowerCase()}") 
+      goto("/${lowerCaseMessageName}") 
 		}
 	}
 </script>
@@ -368,12 +364,11 @@ export function generateRoutes(schema: Schema, messageName: string) {
   import { dbReadWithID } from '$lib/firebase/firestore';
   
    
-  /** @type {import('./$types').PageLoad} */
   export async function load({ params }) {
   
      let message;
      try {
-        message = await dbReadWithID(params.slug)
+        message = await dbReadWithID(\`/${lowerCaseMessageName}/\${params.slug}\`)
      } catch (e) {
         console.error(e);
      } 
@@ -403,11 +398,11 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	const writeFunc = async function writeDoc() {
 		let uid = ""
 		try {
-			uid = await dbAdd(data);
+			uid = await dbAdd("${lowerCaseMessageName}", data);
 		} catch (e) {
 			console.error(e);
 		} finally {
-			goto(\`/${messageName.toLowerCase()}/\${uid}\`) 
+			goto(\`/${lowerCaseMessageName}/\${uid}\`) 
 		}
 	}
 </script>

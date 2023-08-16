@@ -1,16 +1,16 @@
-// @ts-nocheck
+
+  // @ts-nocheck
 
   import { error } from '@sveltejs/kit';
 
   import { dbReadWithID } from '$lib/firebase/firestore';
   
    
-  /** @type {import('./$types').PageLoad} */
   export async function load({ params }) {
   
      let message;
      try {
-        message = await dbReadWithID(params.slug)
+        message = await dbReadWithID(`/fook/${params.slug}`)
      } catch (e) {
         console.error(e);
      } 

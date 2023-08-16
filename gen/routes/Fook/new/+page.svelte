@@ -14,7 +14,7 @@
 	const writeFunc = async function writeDoc() {
 		let uid = ""
 		try {
-			uid = await dbAdd(data);
+			uid = await dbAdd("fook", data);
 		} catch (e) {
 			console.error(e);
 		} finally {

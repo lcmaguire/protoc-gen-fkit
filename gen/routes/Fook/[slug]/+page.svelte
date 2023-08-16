@@ -15,22 +15,20 @@
 
 	const writeFunc = async function writeDoc() {
 		try {
-			await dbSet(data.message);
+			await dbSet(`/fook/${data.uid}`, data.message);
 		} catch (e) {
 			console.error(e);
 		} finally {
-      goto(`/fook/${uid}`) 
+      goto(`/fook/${data.uid}`) 
 		}
 	}
 
 	async function deleteDoc() {
 		try {
-			await dbDelete(data.uid);
+			await dbDelete(`/fook/${data.uid}`);
 		} catch (e) {
 			console.error(e);
 		} finally {
-			console.log('We do cleanup here');
-			goto("/")
       goto("/fook") 
 		}
 	}
