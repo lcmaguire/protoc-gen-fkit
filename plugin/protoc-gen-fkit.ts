@@ -39,10 +39,9 @@ function generateTs(schema: Schema) {
     }
   }
 
-  // genFirebase(schema)
+  //genFirebase(schema)
 }
 
-// todo use  // let imp = viewComponent.import(message) to ensure type safety
 function generateCode(schema: Schema, message: DescMessage) {
   // generate message for name.
   const messageName = message.name
@@ -63,7 +62,6 @@ function generateCode(schema: Schema, message: DescMessage) {
   const createComponent = schema.generateFile(createComponentPath);
   createComponent.print(parseCreateComponent(messageName))
 
-  // todo have this be optional via config.
   generateRoutes(schema, messageName)
 
 }
@@ -136,9 +134,3 @@ function genHtmlViewForMessage(message: DescMessage) {
 
   return res
 }
-
-
-/*
-  generate routes  + actions / db code
-
-*/

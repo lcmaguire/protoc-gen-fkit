@@ -9,8 +9,6 @@
 
 	import { goto } from '$app/navigation';
 
-	// todo do this on successful write ? https://kit.svelte.dev/docs/modules#$app-navigation-invalidateall 
-
 	export let data;
 
 	const writeFunc = async function writeDoc() {

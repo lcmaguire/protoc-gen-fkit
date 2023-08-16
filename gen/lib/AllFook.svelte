@@ -6,8 +6,6 @@
 	import ViewFook from './ViewFook.svelte';
 	import WriteFook from './WriteFook.svelte';
 
-	// todo do this on successful write ? https://kit.svelte.dev/docs/modules#$app-navigation-invalidateall 
-
 	export let data;
   export let writeFunc;
   export let deleteFunc;

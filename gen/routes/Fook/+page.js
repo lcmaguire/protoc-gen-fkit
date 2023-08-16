@@ -1,6 +1,6 @@
 
   // @ts-nocheck
-  
+
   import { error } from '@sveltejs/kit';
 
   import { dbList } from '$lib/firebase/firestore';

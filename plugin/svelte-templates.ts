@@ -31,8 +31,6 @@ export function parseAllcomponent(messageName: string,) {
 	import ${viewName} from './${viewName}.svelte';
 	import ${writeName} from './${writeName}.svelte';
 
-	// todo do this on successful write ? https://kit.svelte.dev/docs/modules#$app-navigation-invalidateall 
-
 	export let data;
   export let writeFunc;
   export let deleteFunc;
@@ -173,7 +171,6 @@ export async function dbReadWithID(docPath: string) {
   return docSnap.data()
 }
 
-// todo set this up to be based upon id or other fields
 export async function dbList(collectionPath: string) {
   let response: any[] = []
   const querySnapshot = await getDocs(collection(db, collectionPath));
@@ -239,39 +236,10 @@ export {authenticateRequest, provider, getUser };
   auth.print(authTemplate)
 }
 
-// todo gen these somewhere
-export function generateActionFuncs(schema: Schema) {
-
-  // messageName
-  const deleteAction = `
-  async function deleteDoc() {
-		try {
-			await dbDelete(data.name);
-		} catch (e) {
-			console.error(e);
-		} finally {
-			console.log('We do cleanup here');
-			goto("/")
-		}
-	}
-
-  const writeFunc = async function writeDoc() {
-		try {
-			await dbSet(data);
-		} catch (e) {
-			console.error(e);
-		} finally {
-			goto("/") 
-		}
-	}
-  `
-}
-
 export function generateRoutes(schema: Schema, messageName: string) {
 
   let lowerCaseMessageName = messageName.toLowerCase()
 
-  //toLowerC
   let dir = `routes/${lowerCaseMessageName}`
   const viewComponentName = `View${messageName}`
 
@@ -297,7 +265,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 
   const listJsTemplate = `
   // @ts-nocheck
-  
+
   import { error } from '@sveltejs/kit';
 
   import { dbList } from '$lib/firebase/firestore';
@@ -324,8 +292,6 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	import { dbSet, dbDelete } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-
-	// todo do this on successful write ? https://kit.svelte.dev/docs/modules#$app-navigation-invalidateall 
 
 	export let data;
 
@@ -412,4 +378,32 @@ export function generateRoutes(schema: Schema, messageName: string) {
 `
   const newComponent = schema.generateFile(`${dir}/new/+page.svelte`);
   newComponent.print(newComponentTemplate)
+}
+
+// todo gen these somewhere
+export function generateActionFuncs(schema: Schema) {
+
+  // messageName
+  const deleteAction = `
+  async function deleteDoc() {
+		try {
+			await dbDelete(data.name);
+		} catch (e) {
+			console.error(e);
+		} finally {
+			console.log('We do cleanup here');
+			goto("/")
+		}
+	}
+
+  const writeFunc = async function writeDoc() {
+		try {
+			await dbSet(data);
+		} catch (e) {
+			console.error(e);
+		} finally {
+			goto("/") 
+		}
+	}
+  `
 }
