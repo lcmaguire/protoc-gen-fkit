@@ -5,12 +5,12 @@
 
 	import WriteFook from './WriteFook.svelte';
 
-	export let data;
+	export let message;
   export let writeFunc;
 
 </script>
 
-	<WriteFook bind:message={data} />
+	<WriteFook bind:message={message} />
 
 	<button on:click={writeFunc}> save </button>
 

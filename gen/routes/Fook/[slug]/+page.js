@@ -1,3 +1,4 @@
+// @ts-nocheck
 
   import { error } from '@sveltejs/kit';
 
@@ -14,6 +15,6 @@
         console.error(e);
      } 
   
-     return message
+     return {uid: params.slug, message:message}
   }
   

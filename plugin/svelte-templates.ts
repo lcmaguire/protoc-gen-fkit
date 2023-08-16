@@ -333,33 +333,36 @@ export function generateRoutes(schema: Schema, messageName: string) {
 
 	const writeFunc = async function writeDoc() {
 		try {
-			await dbSet(data);
+			await dbSet(data.message);
 		} catch (e) {
 			console.error(e);
 		} finally {
-			goto("/") // todo determie where i would like to go
+      goto(\`/${messageName.toLowerCase()}/\${uid}\`) 
 		}
 	}
 
 	async function deleteDoc() {
 		try {
-			await dbDelete(data.name);
+			await dbDelete(data.uid);
 		} catch (e) {
 			console.error(e);
 		} finally {
 			console.log('We do cleanup here');
 			goto("/")
+      goto("/${messageName.toLowerCase()}") 
 		}
 	}
 </script>
 
-<${allComponentName} data={data} writeFunc={writeFunc} deleteFunc={deleteDoc}/>
+<${allComponentName} data={data.message} writeFunc={writeFunc} deleteFunc={deleteDoc}/>
   `
 
   const slugComponent = schema.generateFile(`${dir}/[slug]/+page.svelte`);
   slugComponent.print(slugComponentTemplate)
 
   const slugJsTemplate = `
+  // @ts-nocheck
+
   import { error } from '@sveltejs/kit';
 
   import { dbReadWithID } from '$lib/firebase/firestore';
@@ -375,7 +378,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
         console.error(e);
      } 
   
-     return message
+     return {uid: params.slug, message:message}
   }
   `
   const slugJs = schema.generateFile(`${dir}/[slug]/+page.js`);
@@ -404,7 +407,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 		} catch (e) {
 			console.error(e);
 		} finally {
-			goto(\`/${messageName}/\${uid}\`) 
+			goto(\`/${messageName.toLowerCase()}/\${uid}\`) 
 		}
 	}
 </script>

@@ -18,7 +18,7 @@
 		} catch (e) {
 			console.error(e);
 		} finally {
-			goto(`/Fook/${uid}`) 
+			goto(`/fook/${uid}`) 
 		}
 	}
 </script>
