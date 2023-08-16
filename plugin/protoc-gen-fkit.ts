@@ -13,7 +13,7 @@ import { DescMessage, DescMethod, DescService, MethodKind, ScalarType } from "@b
 import type { Schema } from "@bufbuild/protoplugin/ecmascript";
 
 
-import { genFirebase, generateRoutes, parseAllcomponent, parseTemplate, protoCamelCase } from "./svelte-templates";
+import { genFirebase, generateRoutes, parseAllcomponent, parseCreateComponent, parseTemplate, protoCamelCase } from "./svelte-templates";
 
 
 
@@ -39,7 +39,7 @@ function generateTs(schema: Schema) {
     }
   }
 
-  genFirebase(schema)
+  // genFirebase(schema)
 }
 
 // todo use  // let imp = viewComponent.import(message) to ensure type safety
@@ -58,6 +58,10 @@ function generateCode(schema: Schema, message: DescMessage) {
   const allComponentPath = `lib/All${messageName}.svelte`
   const allComponent = schema.generateFile(allComponentPath);
   allComponent.print(parseAllcomponent(messageName))
+
+  const createComponentPath = `lib/Create${messageName}.svelte`
+  const createComponent = schema.generateFile(allComponentPath);
+  createComponent.print(parseCreateComponent(messageName))
 
   // todo have this be optional via config.
   generateRoutes(schema, messageName)

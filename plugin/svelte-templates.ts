@@ -66,6 +66,31 @@ export function parseAllcomponent(messageName: string,) {
   return allTemplate
 }
 
+export function parseCreateComponent(messageName: string,) {
+
+  const writeName = `Write${messageName}`
+  const allTemplate = `
+<script>
+	// @ts-nocheck
+	// @ts-ignore
+
+	import ${writeName} from './${writeName}.svelte';
+
+	export let data; // probably doesn't need to be exported
+  export let writeFunc;
+
+</script>
+
+	<${writeName} bind:message={data} />
+
+	<button on:click={writeFunc}> save </button>
+
+  `
+
+  return allTemplate
+}
+
+
 export function protoCamelCase(snakeCase: string): string {
   let capNext = false;
   let a = ""
@@ -249,7 +274,8 @@ export function generateRoutes(schema: Schema, messageName: string) {
 
   // todo have this be lower case.
 
-  let dir = "routes"
+  //toLowerC
+  let dir = `routes/${messageName.toLowerCase()}`
   const viewComponentName = `View${messageName}`
 
   const listComponentTemplate = `
@@ -269,7 +295,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 
   `
 
-  const listComponent = schema.generateFile(`${dir}/${messageName}/+page.svelte`);
+  const listComponent = schema.generateFile(`${dir}/+page.svelte`);
   listComponent.print(listComponentTemplate)
 
   const listJsTemplate = `
@@ -285,7 +311,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
   }
   `
 
-  const listJS = schema.generateFile(`${dir}/${messageName}/+page.js`);
+  const listJS = schema.generateFile(`${dir}/+page.js`);
   listJS.print(listJsTemplate)
 
   const allComponentName = `All${messageName}`
@@ -330,7 +356,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 <${allComponentName} data={data} writeFunc={writeFunc} deleteFunc={deleteDoc}/>
   `
 
-  const slugComponent = schema.generateFile(`${dir}/${messageName}/[slug]/+page.svelte`);
+  const slugComponent = schema.generateFile(`${dir}/[slug]/+page.svelte`);
   slugComponent.print(slugComponentTemplate)
 
   const slugJsTemplate = `
@@ -352,6 +378,40 @@ export function generateRoutes(schema: Schema, messageName: string) {
      return message
   }
   `
-  const slugJs = schema.generateFile(`${dir}/${messageName}/[slug]/+page.js`);
+  const slugJs = schema.generateFile(`${dir}/[slug]/+page.js`);
   slugJs.print(slugJsTemplate)
+
+
+  const createComponentName = `Create${messageName}`
+
+  const createComponentTemplate = `
+  
+  <script>
+	// @ts-nocheck
+	// @ts-ignore
+
+	import { dbAdd } from '$lib/firebase/firestore';
+
+	import { goto } from '$app/navigation';
+	import ${createComponentName} from '$lib/${createComponentName}.svelte';
+
+	let data = {};
+
+	const writeFunc = async function writeDoc() {
+		let uid = ""
+		try {
+			uid = await dbAdd(data);
+		} catch (e) {
+			console.error(e);
+		} finally {
+			goto(\`/fook/" + \${uid}\`) 
+		}
+	}
+</script>
+
+<${createComponentName} message={data} writeFunc={writeFunc}/>
+  
+`
+  const newComponent = schema.generateFile(`${dir}/new/+page.svelte`);
+  newComponent.print(slugComponentTemplate)
 }
