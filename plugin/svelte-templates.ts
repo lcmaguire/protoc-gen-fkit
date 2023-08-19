@@ -269,18 +269,15 @@ import { auth } from "./firebase/firebase";
 
 </script>
 
-<nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-	<div class="container-fluid">
-		<a class="navbar-brand" href="/">Home</a>
-		<form class="d-flex">
-			{#if $currentUser !== null}
-                <button type="button" class="btn btn-outline-danger" on:click={logOut}>Log out</button>
-			{:else}
-                <button type="button" class="btn btn-outline-success" on:click={login} >Log in</button>
-			{/if}
-		</form>
-	</div>
+<nav>
+	<a href="/">home</a> |
+	{#if $currentUser !== null}
+		<button  on:click={logOut}>Log out</button>
+	{:else}
+		<button  on:click={login}>Log in</button>
+	{/if}
 </nav>
+
   `
   let path = `lib/Auth.svelte`
   const layout = schema.generateFile(path);
@@ -323,6 +320,8 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	export let data;
 
   </script>
+
+  <a href="/${lowerCaseMessageName}/new">add new item</a>
 
   {#if data != null}
   {#each data.data as item}
@@ -422,7 +421,6 @@ export function generateRoutes(schema: Schema, messageName: string) {
   const createComponentName = `Create${messageName}`
 
   const newComponentTemplate = `
-  
   <script>
 	// @ts-nocheck
 	// @ts-ignore
@@ -447,7 +445,6 @@ export function generateRoutes(schema: Schema, messageName: string) {
 </script>
 
 <${createComponentName} message={data} writeFunc={writeFunc}/>
-  
 `
   const newComponent = schema.generateFile(`${dir}/new/+page.svelte`);
   newComponent.print(newComponentTemplate)

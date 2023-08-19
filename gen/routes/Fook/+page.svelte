@@ -7,6 +7,8 @@
 
   </script>
 
+  <a href="/fook/new">add new item</a>
+
   {#if data != null}
   {#each data.data as item}
     <ViewFook message={item.message}/>

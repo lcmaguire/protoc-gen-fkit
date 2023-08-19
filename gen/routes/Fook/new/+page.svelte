@@ -1,5 +1,4 @@
 
-  
   <script>
 	// @ts-nocheck
 	// @ts-ignore
@@ -24,5 +23,4 @@
 </script>
 
 <CreateFook message={data} writeFunc={writeFunc}/>
-  
 

@@ -22,5 +22,4 @@ import { auth } from "./firebase/firebase";
 		</form>
 	</div>
 </nav>
-
   
