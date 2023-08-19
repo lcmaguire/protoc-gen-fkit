@@ -40,7 +40,6 @@ function generateTs(schema: Schema) {
   }
 
   genFirebase(schema)
-
   genAuthComponent(schema)
   genLayoutPage(schema)
 }
@@ -72,10 +71,12 @@ function generateCode(schema: Schema, message: DescMessage) {
 function genHtmlForMessage(message: DescMessage) {
   let res = `<h1> ${message.name}</h1>`
 
+  // nested messages
+  // oneofs
+
   let currentPath = "message" // todo have this be recursive to update for nested structures.
   for (let i in message.fields) {
     let currentField = message.fields[i]
-    //let currentName = currentField.name
     let currentName = currentField.jsonName
     if (currentName == undefined) {
       currentName = currentField.name
@@ -83,6 +84,15 @@ function genHtmlForMessage(message: DescMessage) {
     currentName = protoCamelCase(currentName)
 
     res += "\n"
+
+    if (currentField.enum != undefined) {
+      // switch with all potential values.
+      res += `<select bind:value={${currentPath}.${currentName}}> <br>`
+      for (let i =0; i < currentField.enum.values.length; i++) {
+        res += `<option value="${currentField.enum.values[i].name}">${currentField.enum.values[i].name}</option> <br>`
+      }
+      res += `</select>`
+    }
 
     switch (currentField.scalar) {
       case ScalarType.STRING:
@@ -92,6 +102,10 @@ function genHtmlForMessage(message: DescMessage) {
         res += `<input type=checkbox  bind:checked={${currentPath}.${currentName}}>`
         break;
       case ScalarType.INT32 || ScalarType.INT64 || ScalarType.UINT32 || ScalarType.UINT64:
+        // todo enforce int in UI here
+        res += `<input type=number bind:value={${currentPath}.${currentName}} min=0>`
+        break;
+      case ScalarType.FIXED32 || ScalarType.FIXED64 || ScalarType.SFIXED32 || ScalarType.SFIXED64 || ScalarType.DOUBLE || ScalarType.FLOAT:
         res += `<input type=number bind:value={${currentPath}.${currentName}} min=0>`
         break;
       default:
@@ -119,6 +133,10 @@ function genHtmlViewForMessage(message: DescMessage) {
     currentName = protoCamelCase(currentName)
 
     res += "\n"
+
+    if (currentField.enum != undefined) {
+      res += `<p> {${currentPath}.${currentName}} </p>`
+    }
 
     switch (currentField.scalar) {
       case ScalarType.STRING:
