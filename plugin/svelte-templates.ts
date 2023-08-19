@@ -2,11 +2,22 @@ import { DescMessage } from "@bufbuild/protobuf"
 import { Schema } from "@bufbuild/protoplugin"
 
 
-export function parseTemplate(html: string) {
+export function parseTemplate(html: string, message: DescMessage) {
+
+  let imports = ""
+  for (let i =0; i < message.nestedMessages.length; i++) {
+    let name = message.nestedMessages[0].name
+    imports += `
+    import View${name} from './View${name}.svelte';
+	  import Write${name} from './Write${name}.svelte';
+    `
+  }
 
   const getTplate = `
 <script>
   // @ts-nocheck
+  ${imports}
+
   export let message;
 
 </script>
@@ -19,7 +30,7 @@ export function parseTemplate(html: string) {
   return getTplate
 }
 
-export function parseAllcomponent(messageName: string,) {
+export function parseAllcomponent(messageName: string) {
 
   const viewName = `View${messageName}`
   const writeName = `Write${messageName}`
