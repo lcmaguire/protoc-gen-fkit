@@ -7,7 +7,7 @@
   
    
   export async function load() {
-     let messages = await dbList("fook")
-     return { messages: messages}
+     let data = await dbList("fook")
+     return {data : data}
   }
   

@@ -13,7 +13,7 @@ import { DescMessage, DescMethod, DescService, MethodKind, ScalarType } from "@b
 import type { Schema } from "@bufbuild/protoplugin/ecmascript";
 
 
-import { genFirebase, generateRoutes, parseAllcomponent, parseCreateComponent, parseTemplate, protoCamelCase } from "./svelte-templates";
+import { genAuthComponent, genFirebase, genLayoutPage, generateRoutes, parseAllcomponent, parseCreateComponent, parseTemplate, protoCamelCase } from "./svelte-templates";
 
 
 
@@ -39,7 +39,10 @@ function generateTs(schema: Schema) {
     }
   }
 
-  //genFirebase(schema)
+  genFirebase(schema)
+
+  genAuthComponent(schema)
+  genLayoutPage(schema)
 }
 
 function generateCode(schema: Schema, message: DescMessage) {

@@ -1,6 +1,9 @@
 
-import {GoogleAuthProvider, type User}  from "firebase/auth";
-import {auth} from "./firebase"
+import { GoogleAuthProvider, signInWithPopup, type User, onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase"
+  
+import { writable } from 'svelte/store';
+  
 
 async function authenticateRequest(user : User){
     let token = await user.getIdToken(false)
@@ -13,9 +16,19 @@ async function authenticateRequest(user : User){
 // todo include all auth providers
 const provider = new GoogleAuthProvider();
 
-function getUser() :User | null{
-    return auth.currentUser
+const currentUser = writable(auth.currentUser)
+
+onAuthStateChanged(auth, (user) => {
+    currentUser.set(user)
+});
+
+async function login() {
+    await signInWithPopup(auth, provider).then((result) => {
+        currentUser.set(result.user)
+    }).catch((error) => {
+        console.log(error)
+    });
 }
 
-export {authenticateRequest, provider, getUser };
+export { authenticateRequest, login ,currentUser};
 

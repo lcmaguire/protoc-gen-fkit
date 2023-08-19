@@ -12,7 +12,7 @@
 	let data = {};
 
 	const writeFunc = async function writeDoc() {
-		let uid = ""
+		let uid = "" // todo change to be path
 		try {
 			uid = await dbAdd("fook", data);
 		} catch (e) {

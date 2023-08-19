@@ -8,8 +8,9 @@
   </script>
 
   {#if data != null}
-  {#each data.messages as item}
-    <ViewFook message={item}/>
+  {#each data.data as item}
+    <ViewFook message={item.message}/>
+    <a href="{item.path}">view more</a>
   {/each}
  {/if}
 

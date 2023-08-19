@@ -15,6 +15,6 @@
         console.error(e);
      } 
   
-     return {uid: params.slug, message:message}
+     return message
   }
   

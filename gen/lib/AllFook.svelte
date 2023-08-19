@@ -16,6 +16,12 @@
 		editable = !editable;
 	}
 
+  // this will toggle from edit view to just view 
+  function writeWrapper () {
+		writeFunc()
+		toggle() 
+	}
+
 </script>
 
 {#if data != null && !editable}
@@ -25,10 +31,12 @@
 {#if editable }
 	<WriteFook bind:message={data} />
 
-	<button on:click={writeFunc}> save </button>
+	<button on:click={writeWrapper}> save </button>
+
+  <button on:click={toggle}> cancel </button>
 {/if}
 
-{#if  writeFunc != null }
+{#if  writeFunc != null && !editable }
 	<button on:click={toggle}> edit </button>
 {/if}
 

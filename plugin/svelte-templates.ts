@@ -41,6 +41,12 @@ export function parseAllcomponent(messageName: string,) {
 		editable = !editable;
 	}
 
+  // this will toggle from edit view to just view 
+  function writeWrapper () {
+		writeFunc()
+		toggle() 
+	}
+
 </script>
 
 {#if data != null && !editable}
@@ -50,10 +56,12 @@ export function parseAllcomponent(messageName: string,) {
 {#if editable }
 	<${writeName} bind:message={data} />
 
-	<button on:click={writeFunc}> save </button>
+	<button on:click={writeWrapper}> save </button>
+
+  <button on:click={toggle}> cancel </button>
 {/if}
 
-{#if  writeFunc != null }
+{#if  writeFunc != null && !editable }
 	<button on:click={toggle}> edit </button>
 {/if}
 
@@ -87,7 +95,6 @@ export function parseCreateComponent(messageName: string,) {
 
   return allTemplate
 }
-
 
 export function protoCamelCase(snakeCase: string): string {
   let capNext = false;
@@ -158,6 +165,9 @@ const db = getFirestore(app);
 
 export {app, auth, db};
 `
+  let dir = "lib/firebase"
+  const firebase = schema.generateFile(`${dir}/firebase.ts`);
+  //firebase.print(firebaseTemplate)
 
   const firestoreTemplate = `
 import { addDoc, getDoc, getDocs, query, updateDoc, type DocumentData, deleteDoc } from "firebase/firestore";
@@ -168,27 +178,27 @@ import { collection, doc, setDoc } from "firebase/firestore";
 export async function dbReadWithID(docPath: string) {
   const docRef = doc(db, docPath);
   const docSnap = await getDoc(docRef);
-  return docSnap.data()
+  return { uid: docSnap.id, path:docSnap.ref.path, message: docSnap.data()}
 }
 
 export async function dbList(collectionPath: string) {
   let response: any[] = []
   const querySnapshot = await getDocs(collection(db, collectionPath));
   querySnapshot.forEach((doc) => {
-      response.push(doc.data())
+      response.push({ uid: doc.id, path:doc.ref.path ,message: doc.data()})
   });
   return response
 }
 
 export async function dbAdd(collectionPath: string, input: any): Promise<string> {
   const docRef = await addDoc(collection(db, collectionPath), input)
-  return docRef.id
+  return docRef.id // todo consider returning ref / full obj
 }
 
 export async function dbSet(docPath: string, input: any) {
   const docRef = doc(db, docPath);
   await setDoc(docRef, input)
-  return docRef.id
+  return docRef.id // todo consider returning ref / full obj
 }
 
 export async function dbUpdate(docPath: string, input: any) {
@@ -203,9 +213,15 @@ export async function dbDelete(docPath: string) {
 
 `
 
+  const firestore = schema.generateFile(`${dir}/firestore.ts`);
+  firestore.print(firestoreTemplate)
+
   const authTemplate = `
-import {GoogleAuthProvider, type User}  from "firebase/auth";
-import {auth} from "./firebase"
+import { GoogleAuthProvider, signInWithPopup, type User, onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase"
+  
+import { writable } from 'svelte/store';
+  
 
 async function authenticateRequest(user : User){
     let token = await user.getIdToken(false)
@@ -218,22 +234,78 @@ async function authenticateRequest(user : User){
 // todo include all auth providers
 const provider = new GoogleAuthProvider();
 
-function getUser() :User | null{
-    return auth.currentUser
+const currentUser = writable(auth.currentUser)
+
+onAuthStateChanged(auth, (user) => {
+    currentUser.set(user)
+});
+
+async function login() {
+    await signInWithPopup(auth, provider).then((result) => {
+        currentUser.set(result.user)
+    }).catch((error) => {
+        console.log(error)
+    });
 }
 
-export {authenticateRequest, provider, getUser };
+export { authenticateRequest, login ,currentUser};
 `
-
-  let dir = "lib/firebase"
-  const firebase = schema.generateFile(`${dir}/firebase.ts`);
-  firebase.print(firebaseTemplate)
-
-  const firestore = schema.generateFile(`${dir}/firestore.ts`);
-  firestore.print(firestoreTemplate)
 
   const auth = schema.generateFile(`${dir}/auth.ts`);
   auth.print(authTemplate)
+}
+
+export function genAuthComponent(schema: Schema) {
+
+  const authTemplate = `
+  
+<script>
+import { auth } from "./firebase/firebase";
+  import { currentUser, login } from "./firebase/auth";
+
+  async function logOut() {
+     await auth.signOut()
+  }
+
+</script>
+
+<nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="/">Home</a>
+		<form class="d-flex">
+			{#if $currentUser !== null}
+                <button type="button" class="btn btn-outline-danger" on:click={logOut}>Log out</button>
+			{:else}
+                <button type="button" class="btn btn-outline-success" on:click={login} >Log in</button>
+			{/if}
+		</form>
+	</div>
+</nav>
+  `
+  let path = `lib/Auth.svelte`
+  const layout = schema.generateFile(path);
+  layout.print(authTemplate)
+}
+
+export function genLayoutPage(schema: Schema) {
+
+  const layoutTemplate = `
+  
+  <script>
+
+	import Auth from "$lib/Auth.svelte";
+
+</script>
+
+<Auth/>
+
+
+<slot></slot>
+
+  `
+  let path = `routes/+layout.svelte`
+  const layout = schema.generateFile(path);
+  layout.print(layoutTemplate)
 }
 
 export function generateRoutes(schema: Schema, messageName: string) {
@@ -253,8 +325,9 @@ export function generateRoutes(schema: Schema, messageName: string) {
   </script>
 
   {#if data != null}
-  {#each data.messages as item}
-    <${viewComponentName} message={item}/>
+  {#each data.data as item}
+    <${viewComponentName} message={item.message}/>
+    <a href="{item.path}">view more</a>
   {/each}
  {/if}
 
@@ -272,8 +345,8 @@ export function generateRoutes(schema: Schema, messageName: string) {
   
    
   export async function load() {
-     let messages = await dbList("${lowerCaseMessageName}")
-     return { messages: messages}
+     let data = await dbList("${lowerCaseMessageName}")
+     return {data : data}
   }
   `
 
@@ -339,7 +412,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
         console.error(e);
      } 
   
-     return {uid: params.slug, message:message}
+     return message
   }
   `
   const slugJs = schema.generateFile(`${dir}/[slug]/+page.js`);
@@ -362,7 +435,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	let data = {};
 
 	const writeFunc = async function writeDoc() {
-		let uid = ""
+		let uid = "" // todo change to be path
 		try {
 			uid = await dbAdd("${lowerCaseMessageName}", data);
 		} catch (e) {
