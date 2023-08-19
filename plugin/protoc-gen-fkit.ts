@@ -113,7 +113,7 @@ function genHtmlForMessage(message: DescMessage) {
       res += `</select>`
     }
     if (currentField.message != undefined) {
-      res += `<View${currentField.message.name} ${currentPath}={${currentPath}.${currentName}} />`
+      res += `<Write${currentField.message.name} bind:${currentPath}={${currentPath}.${currentName}} />`
     }
   }
 
@@ -153,6 +153,10 @@ function genHtmlViewForMessage(message: DescMessage) {
 
     if (currentField.enum != undefined) {
       res += `<p> {${currentPath}.${currentName}} </p>`
+    }
+
+    if (currentField.message != undefined) {
+      res += `<View${currentField.message.name} ${currentPath}={${currentPath}.${currentName}} />`
     }
   }
 

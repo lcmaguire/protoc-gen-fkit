@@ -5,8 +5,13 @@ import { Schema } from "@bufbuild/protoplugin"
 export function parseTemplate(html: string, message: DescMessage) {
 
   let imports = ""
-  for (let i =0; i < message.nestedMessages.length; i++) {
-    let name = message.nestedMessages[0].name
+  for (let i =0; i < message.fields.length; i++) {
+
+    if (message.fields[i].message == null) {
+      continue
+    }
+    let name = message.fields[i].message?.name
+    // TODO have this work wil different paths + only for required imports.
     imports += `
     import View${name} from './View${name}.svelte';
 	  import Write${name} from './Write${name}.svelte';
@@ -67,6 +72,8 @@ export function parseAllcomponent(messageName: string) {
 {#if editable }
 	<${writeName} bind:message={data} />
 
+  <br>
+  <br>
 	<button on:click={writeWrapper}> save </button>
 
   <button on:click={toggle}> cancel </button>

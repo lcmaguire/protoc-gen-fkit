@@ -31,6 +31,8 @@
 {#if editable }
 	<WriteFook bind:message={data} />
 
+  <br>
+  <br>
 	<button on:click={writeWrapper}> save </button>
 
   <button on:click={toggle}> cancel </button>
