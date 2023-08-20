@@ -1,7 +1,7 @@
 
   <script>
   // @ts-ignore
-	import ViewFook from '$lib/ViewFook.svelte';
+	import ViewFook from '$lib/Fook/ViewFook.svelte';
 	
 	export let data;
 

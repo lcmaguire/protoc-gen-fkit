@@ -3,7 +3,7 @@
 	// @ts-nocheck
 	// @ts-ignore
 
-	import AllFully from '$lib/AllFully.svelte';
+	import AllFully from '$lib/Fully/AllFully.svelte';
 
 	import { dbSet, dbDelete } from '$lib/firebase/firestore';
 

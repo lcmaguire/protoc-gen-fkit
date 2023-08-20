@@ -1,7 +1,7 @@
 
   <script>
   // @ts-ignore
-	import ViewFully from '$lib/ViewFully.svelte';
+	import ViewFully from '$lib/Fully/ViewFully.svelte';
 	
 	export let data;
 

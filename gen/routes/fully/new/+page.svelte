@@ -6,7 +6,7 @@
 	import { dbAdd } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-	import CreateFully from '$lib/CreateFully.svelte';
+	import CreateFully from '$lib/Fully/CreateFully.svelte';
 
 	let Fully = {};
 

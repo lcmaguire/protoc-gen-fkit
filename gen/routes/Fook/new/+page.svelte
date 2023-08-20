@@ -6,7 +6,7 @@
 	import { dbAdd } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-	import CreateFook from '$lib/CreateFook.svelte';
+	import CreateFook from '$lib/Fook/CreateFook.svelte';
 
 	let Fook = {};
 

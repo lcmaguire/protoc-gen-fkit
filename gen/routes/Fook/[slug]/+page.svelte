@@ -3,7 +3,7 @@
 	// @ts-nocheck
 	// @ts-ignore
 
-	import AllFook from '$lib/AllFook.svelte';
+	import AllFook from '$lib/Fook/AllFook.svelte';
 
 	import { dbSet, dbDelete } from '$lib/firebase/firestore';
 

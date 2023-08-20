@@ -13,7 +13,7 @@ import { DescField, DescMessage, DescMethod, DescService, FieldDescriptorProto, 
 import type { Schema } from "@bufbuild/protoplugin/ecmascript";
 
 
-import { genAuthComponent, genFirebase, genLayoutPage, generateRoutes, parseAllcomponent, parseCreateComponent, parseEditTemplate, parseTemplate, protoCamelCase } from "./svelte-templates";
+import { genAuthComponent, genFirebase, genLayoutPage, generateRoutes, parseAllcomponent, parseCreateComponent, parseEditTemplate, parseViewTemplate, protoCamelCase } from "./svelte-templates";
 
 
 
@@ -48,20 +48,19 @@ function generateCode(schema: Schema, message: DescMessage) {
   // generate message for name.
   const messageName = message.name
 
-  const writeComponentPath = `lib/Write${messageName}.svelte`
+  const writeComponentPath = `lib/${messageName}/Write${messageName}.svelte`
   const writeComponent = schema.generateFile(writeComponentPath);
-  //writeComponent.print(`${parseTemplate(genHtmlForMessage(message), message)}`)
   writeComponent.print(parseEditTemplate(genHtmlForMessage(message), message))
 
-  const viewComponentPath = `lib/View${messageName}.svelte`
+  const viewComponentPath = `lib/${messageName}/View${messageName}.svelte`
   const viewComponent = schema.generateFile(viewComponentPath);
-  viewComponent.print(`${parseTemplate(genHtmlViewForMessage(message), message)}`)
+  viewComponent.print(`${parseViewTemplate(genHtmlViewForMessage(message), message)}`)
 
-  const allComponentPath = `lib/All${messageName}.svelte`
+  const allComponentPath = `lib/${messageName}/All${messageName}.svelte`
   const allComponent = schema.generateFile(allComponentPath);
   allComponent.print(parseAllcomponent(messageName))
 
-  const createComponentPath = `lib/Create${messageName}.svelte`
+  const createComponentPath = `lib/${messageName}/Create${messageName}.svelte`
   const createComponent = schema.generateFile(createComponentPath);
   createComponent.print(parseCreateComponent(messageName))
 
@@ -71,7 +70,7 @@ function generateCode(schema: Schema, message: DescMessage) {
 
 function genHtmlForMessage(message: DescMessage) {
   let messageName = message.name
-  let res = `<h3> ${messageName}</h3>`
+  let res = `<h3> ${messageName}</h3>\n`
 
   for (let i in message.fields) {
     let currentField = message.fields[i]
@@ -129,20 +128,17 @@ function editEnumView(currentField: DescField, currentName: string){
   for (let i = 0; i < currentField.enum!.values.length; i++) {
     res += `<option value="${currentField.enum!.values[i].name}">${currentField.enum!.values[i].name}</option>\n`
   }
-  res += `</select>`
+  res += `</select>\n`
   return res
 }
 
 function editMessageView(message: DescMessage, currentName: string) {
-  return `<Write${message.name} bind:${message.name}={${currentName}} />`
+  return `<Write${message.name} bind:${message.name}={${currentName}} />\n`
 }
 
-/*
-  Change this to insert into html template based upon desired component. 
-*/
 function genHtmlViewForMessage(message: DescMessage) {
   let messageName = message.name
-  let res = `<h3> ${messageName}</h3>`
+  let res = `<h3> ${messageName}</h3>\n`
 
   for (let i in message.fields) {
     let currentField = message.fields[i]
@@ -156,8 +152,8 @@ function genHtmlViewForMessage(message: DescMessage) {
     let body = ""
     let end = ""
     if (currentField.repeated) {
-      start = `{#if ${messageName}.${currentFieldName} != null}\n{#each ${messageName}.${currentFieldName} as ${currentFieldName}}`
-      end = `\n{/each}\n{/if}`
+      start = `{#if ${messageName}.${currentFieldName} != null}\n{#each ${messageName}.${currentFieldName} as ${currentFieldName}}\n`
+      end = `\n{/each}\n{/if}\n`
     } else {
       currentFieldName = `${messageName}.${currentFieldName}`
     }
@@ -180,20 +176,20 @@ function genHtmlViewForMessage(message: DescMessage) {
 function getScalarView(currentField: DescField, currentName: string) {
   switch (currentField.scalar) {
     case ScalarType.STRING:
-      return `<p> {${currentName}} </p>`
+      return `<p> {${currentName}} </p>\n`
     case ScalarType.BOOL:
-      return `<p> {${currentName}}  </p>`
+      return `<p> {${currentName}}  </p>\n`
     case ScalarType.INT32 || ScalarType.INT64 || ScalarType.UINT32 || ScalarType.UINT64:
-      return `<p> {${currentName}} </p>`
+      return `<p> {${currentName}} </p>\n`
     default:
       return ""
   }
 }
 
 function getEnumView(currentField: DescField, currentName: string) {
-  return `<p> {${currentName}} </p>`
+  return `<p> {${currentName}} </p>\n`
 }
 
 function getMessageView(message: DescMessage, currentName: string) {
-  return `<View${message.name} ${message.name}={${currentName}} />`
+  return `<View${message.name} ${message.name}={${currentName}} />\n`
 }

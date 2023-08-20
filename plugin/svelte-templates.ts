@@ -2,7 +2,7 @@ import { DescField, DescMessage, ScalarType } from "@bufbuild/protobuf"
 import { Schema } from "@bufbuild/protoplugin"
 
 
-export function parseTemplate(html: string, message: DescMessage) {
+export function parseViewTemplate(html: string, message: DescMessage) {
 
   let imports = ""
   for (let i = 0; i < message.fields.length; i++) {
@@ -11,10 +11,8 @@ export function parseTemplate(html: string, message: DescMessage) {
       continue
     }
     let name = message.fields[i].message?.name
-    // TODO have this work wil different paths + only for required imports.
     imports += `
-    import View${name} from './View${name}.svelte';
-	  import Write${name} from './Write${name}.svelte';
+    import View${name} from '$lib/${name}/View${name}.svelte';
     `
   }
 
@@ -60,6 +58,9 @@ export function parseEditTemplate(html: string, message: DescMessage): string {
     if (message.fields[i].repeated) {
       repeatedFuncs += `
       function push${currentField.name}Array() {
+        if (${message.name}.${currentField.name} == undefined) { // if underfined initialize array
+          ${message.name}.${currentField.name} = []
+        }
         let emptyVal =  ${defaultRepeatedValue(message.fields[i])}
         ${message.name}.${message.fields[i].name} = ${message.name}.${message.fields[i].name}.concat(emptyVal)
       }
@@ -79,7 +80,7 @@ export function parseEditTemplate(html: string, message: DescMessage): string {
     }
     let name = message.fields[i].message?.name
     imports += `
-	  import Write${name} from './Write${name}.svelte';
+	  import Write${name} from '$lib/${name}/Write${name}.svelte';
     `
   }
 
@@ -111,8 +112,8 @@ export function parseAllcomponent(messageName: string) {
 	// @ts-nocheck
 	// @ts-ignore
 
-	import ${viewName} from './${viewName}.svelte';
-	import ${writeName} from './${writeName}.svelte';
+	import ${viewName} from '$lib//${messageName}/${viewName}.svelte';
+	import ${writeName} from '$lib/${messageName}/${writeName}.svelte';
 
 	export let ${messageName};
   export let writeFunc;
@@ -165,14 +166,14 @@ export function parseCreateComponent(messageName: string,) {
 	// @ts-nocheck
 	// @ts-ignore
 
-	import ${writeName} from './${writeName}.svelte';
+	import ${writeName} from '$lib/${messageName}/${writeName}.svelte';
 
-	export let message;
+	export let ${messageName};
   export let writeFunc;
 
 </script>
 
-	<${writeName} bind:message={message} />
+	<${writeName} bind:${messageName}={${messageName}} />
 
 	<button on:click={writeFunc}> save </button>
 
@@ -400,7 +401,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
   const listComponentTemplate = `
   <script>
   // @ts-ignore
-	import ${viewComponentName} from '$lib/${viewComponentName}.svelte';
+	import ${viewComponentName} from '$lib/${messageName}/${viewComponentName}.svelte';
 	
 	export let data;
 
@@ -444,7 +445,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	// @ts-nocheck
 	// @ts-ignore
 
-	import ${allComponentName} from '$lib/${allComponentName}.svelte';
+	import ${allComponentName} from '$lib/${messageName}/${allComponentName}.svelte';
 
 	import { dbSet, dbDelete } from '$lib/firebase/firestore';
 
@@ -513,7 +514,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	import { dbAdd } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-	import ${createComponentName} from '$lib/${createComponentName}.svelte';
+	import ${createComponentName} from '$lib/${messageName}/${createComponentName}.svelte';
 
 	let ${messageName} = {};
 
