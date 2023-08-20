@@ -6,6 +6,20 @@
 import { proto3 } from "@bufbuild/protobuf";
 
 /**
+ * @generated from enum fook.Rating
+ */
+export const Rating = proto3.makeEnum(
+  "fook.Rating",
+  [
+    {no: 0, name: "RATING_UNSPECIFIED", localName: "UNSPECIFIED"},
+    {no: 1, name: "RATING_DISGUSTING", localName: "DISGUSTING"},
+    {no: 2, name: "RATING_BAD", localName: "BAD"},
+    {no: 3, name: "RATING_GOOD", localName: "GOOD"},
+    {no: 4, name: "RATING_EXCELLENT", localName: "EXCELLENT"},
+  ],
+);
+
+/**
  * @generated from message fook.Fook
  */
 export const Fook = proto3.makeMessageType(
@@ -15,6 +29,19 @@ export const Fook = proto3.makeMessageType(
     { no: 2, name: "display_name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "active", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 4, name: "count", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 5, name: "rating", kind: "enum", T: proto3.getEnumType(Rating) },
+    { no: 6, name: "fully", kind: "message", T: Fully },
+    { no: 7, name: "words", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+  ],
+);
+
+/**
+ * @generated from message fook.Fully
+ */
+export const Fully = proto3.makeMessageType(
+  "fook.Fully",
+  () => [
+    { no: 1, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 

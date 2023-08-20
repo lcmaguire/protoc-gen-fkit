@@ -6,4 +6,19 @@ message Fook {
     string display_name = 2;
     bool active = 3;
     int32 count = 4;
+    Rating rating = 5;
+    Fully fully = 6;
+    repeated string words = 7;
+}
+
+enum Rating {
+    RATING_UNSPECIFIED = 0;
+    RATING_DISGUSTING = 1;
+    RATING_BAD = 2;
+    RATING_GOOD = 3;
+    RATING_EXCELLENT = 4;
+}
+
+message Fully {
+    string description = 1;
 }

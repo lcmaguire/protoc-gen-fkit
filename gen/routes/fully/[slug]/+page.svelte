@@ -3,7 +3,7 @@
 	// @ts-nocheck
 	// @ts-ignore
 
-	import AllFook from '$lib/AllFook.svelte';
+	import AllFully from '$lib/AllFully.svelte';
 
 	import { dbSet, dbDelete } from '$lib/firebase/firestore';
 
@@ -13,24 +13,24 @@
 
 	const writeFunc = async function writeDoc() {
 		try {
-			await dbSet(`/fook/${data.uid}`, data.message);
+			await dbSet(`/fully/${data.uid}`, data.message);
 		} catch (e) {
 			console.error(e);
 		} finally {
-      goto(`/fook/${data.uid}`) 
+      goto(`/fully/${data.uid}`) 
 		}
 	}
 
 	async function deleteDoc() {
 		try {
-			await dbDelete(`/fook/${data.uid}`);
+			await dbDelete(`/fully/${data.uid}`);
 		} catch (e) {
 			console.error(e);
 		} finally {
-      goto("/fook") 
+      goto("/fully") 
 		}
 	}
 </script>
 
-<AllFook Fook={data.message} writeFunc={writeFunc} deleteFunc={deleteDoc}/>
+<AllFully Fully={data.message} writeFunc={writeFunc} deleteFunc={deleteDoc}/>
   

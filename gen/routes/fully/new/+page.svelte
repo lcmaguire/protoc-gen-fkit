@@ -6,21 +6,21 @@
 	import { dbAdd } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-	import CreateFook from '$lib/CreateFook.svelte';
+	import CreateFully from '$lib/CreateFully.svelte';
 
-	let Fook = {};
+	let Fully = {};
 
 	const writeFunc = async function writeDoc() {
 		let uid = "" // todo change to be path
 		try {
-			uid = await dbAdd("fook", Fook);
+			uid = await dbAdd("fully", Fully);
 		} catch (e) {
 			console.error(e);
 		} finally {
-			goto(`/fook/${uid}`) 
+			goto(`/fully/${uid}`) 
 		}
 	}
 </script>
 
-<CreateFook Fook={Fook} writeFunc={writeFunc}/>
+<CreateFully Fully={Fully} writeFunc={writeFunc}/>
 

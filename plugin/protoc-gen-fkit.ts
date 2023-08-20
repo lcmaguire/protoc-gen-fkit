@@ -9,11 +9,11 @@ import {
   localName,
   findCustomMessageOption,
 } from "@bufbuild/protoplugin/ecmascript";
-import { DescMessage, DescMethod, DescService, MethodKind, ScalarType } from "@bufbuild/protobuf";
+import { DescField, DescMessage, DescMethod, DescService, FieldDescriptorProto, MethodKind, ScalarType } from "@bufbuild/protobuf";
 import type { Schema } from "@bufbuild/protoplugin/ecmascript";
 
 
-import { genAuthComponent, genFirebase, genLayoutPage, generateRoutes, parseAllcomponent, parseCreateComponent, parseTemplate, protoCamelCase } from "./svelte-templates";
+import { genAuthComponent, genFirebase, genLayoutPage, generateRoutes, parseAllcomponent, parseCreateComponent, parseEditTemplate, parseTemplate, protoCamelCase } from "./svelte-templates";
 
 
 
@@ -50,7 +50,8 @@ function generateCode(schema: Schema, message: DescMessage) {
 
   const writeComponentPath = `lib/Write${messageName}.svelte`
   const writeComponent = schema.generateFile(writeComponentPath);
-  writeComponent.print(`${parseTemplate(genHtmlForMessage(message), message)}`)
+  //writeComponent.print(`${parseTemplate(genHtmlForMessage(message), message)}`)
+  writeComponent.print(parseEditTemplate(genHtmlForMessage(message), message))
 
   const viewComponentPath = `lib/View${messageName}.svelte`
   const viewComponent = schema.generateFile(viewComponentPath);
@@ -69,96 +70,130 @@ function generateCode(schema: Schema, message: DescMessage) {
 }
 
 function genHtmlForMessage(message: DescMessage) {
-  let res = `<h1> ${message.name}</h1>`
+  let messageName = message.name
+  let res = `<h3> ${messageName}</h3>`
 
-  // todo gather nested messages names to import.
-  // message.nestedMessages (perhaps here or in generating view)
-
-  // arrays
-
-  let currentPath = "message" // todo have this be recursive to update for nested structures.
   for (let i in message.fields) {
     let currentField = message.fields[i]
-    let currentName = currentField.jsonName
-    if (currentName == undefined) {
-      currentName = currentField.name
+    let currentFieldName = currentField.jsonName
+    if (currentFieldName == undefined) {
+      currentFieldName = currentField.name
     }
-    currentName = protoCamelCase(currentName)
+    currentFieldName = protoCamelCase(currentFieldName)
 
     res += "\n"
 
-    switch (currentField.scalar) {
-      case ScalarType.STRING:
-        res += `<input bind:value={${currentPath}.${currentName}} >\n`
-        break;
-      case ScalarType.BOOL:
-        res += `<input type=checkbox  bind:checked={${currentPath}.${currentName}}>\n`
-        break;
-      case ScalarType.INT32 || ScalarType.INT64 || ScalarType.UINT32 || ScalarType.UINT64:
-        // todo enforce int in UI here
-        res += `<input type=number bind:value={${currentPath}.${currentName}} min=0>\n`
-        break;
-      case ScalarType.FIXED32 || ScalarType.FIXED64 || ScalarType.SFIXED32 || ScalarType.SFIXED64 || ScalarType.DOUBLE || ScalarType.FLOAT:
-        res += `<input type=number bind:value={${currentPath}.${currentName}} min=0>\n`
-        break;
-      default:
-        break;
+    let start = ""
+    let body = ""
+    let end = ""
+    if (currentField.repeated) {
+      start = `{#if ${messageName}.${currentFieldName} != null}\n{#each ${messageName}.${currentFieldName} as ${currentFieldName}, key}\n`
+      end = `<button on:click={() => remove${currentFieldName}Array(key)}> - </button>\n{/each}\n{/if}\n<button on:click={push${currentFieldName}Array}> + </button>\n`
+    } else {
+      currentFieldName = `${messageName}.${currentFieldName}`
     }
+    res += "\n"
 
     if (currentField.enum != undefined) {
-      res += `<select bind:value={${currentPath}.${currentName}}>\n`
-      for (let i =0; i < currentField.enum.values.length; i++) {
-        res += `<option value="${currentField.enum.values[i].name}">${currentField.enum.values[i].name}</option>\n`
-      }
-      res += `</select>`
+      body = editEnumView(currentField, currentFieldName)
+    } else if (currentField.message != undefined) {
+      body = editMessageView(currentField.message!, currentFieldName)
+    } else {
+      body = editScalarView(currentField, currentFieldName)
     }
-    if (currentField.message != undefined) {
-      res += `<Write${currentField.message.name} bind:${currentPath}={${currentPath}.${currentName}} />`
-    }
+    res += start + body + end
   }
 
   return res
+}
+
+function editScalarView(currentField: DescField, currentName: string) {
+  switch (currentField.scalar) {
+    case ScalarType.STRING:
+      return  `<input bind:value={${currentName}} >\n`
+    case ScalarType.BOOL:
+      return`<input type=checkbox  bind:checked={${currentName}}>\n`
+      ;
+    case ScalarType.INT32 || ScalarType.INT64 || ScalarType.UINT32 || ScalarType.UINT64:
+      // todo enforce int in UI here
+      return `<input type=number bind:value={${currentName}} min=0>\n`
+    case ScalarType.FIXED32 || ScalarType.FIXED64 || ScalarType.SFIXED32 || ScalarType.SFIXED64 || ScalarType.DOUBLE || ScalarType.FLOAT:
+      return `<input type=number bind:value={${currentName}} min=0>\n`
+    default:
+      return ""
+  }
+}
+
+function editEnumView(currentField: DescField, currentName: string){
+  let res = `<select bind:value={${currentName}}>\n`
+  for (let i = 0; i < currentField.enum!.values.length; i++) {
+    res += `<option value="${currentField.enum!.values[i].name}">${currentField.enum!.values[i].name}</option>\n`
+  }
+  res += `</select>`
+  return res
+}
+
+function editMessageView(message: DescMessage, currentName: string) {
+  return `<Write${message.name} bind:${message.name}={${currentName}} />`
 }
 
 /*
   Change this to insert into html template based upon desired component. 
 */
 function genHtmlViewForMessage(message: DescMessage) {
-  let res = `<h1> ${message.name}</h1>`
+  let messageName = message.name
+  let res = `<h3> ${messageName}</h3>`
 
-  let currentPath = "message" // todo have this be recursive to update for nested structures.
   for (let i in message.fields) {
     let currentField = message.fields[i]
-    let currentName = currentField.jsonName
-    if (currentName == undefined) {
-      currentName = currentField.name
+    let currentFieldName = currentField.jsonName
+    if (currentFieldName == undefined) {
+      currentFieldName = currentField.name
     }
-    currentName = protoCamelCase(currentName)
+    currentFieldName = protoCamelCase(currentFieldName)
 
+    let start = ""
+    let body = ""
+    let end = ""
+    if (currentField.repeated) {
+      start = `{#if ${messageName}.${currentFieldName} != null}\n{#each ${messageName}.${currentFieldName} as ${currentFieldName}}`
+      end = `\n{/each}\n{/if}`
+    } else {
+      currentFieldName = `${messageName}.${currentFieldName}`
+    }
     res += "\n"
 
-    switch (currentField.scalar) {
-      case ScalarType.STRING:
-        res += `<p> {${currentPath}.${currentName}} </p>`
-        break;
-      case ScalarType.BOOL:
-        res += `<p> {${currentPath}.${currentName}}  </p>`
-        break;
-      case ScalarType.INT32 || ScalarType.INT64 || ScalarType.UINT32 || ScalarType.UINT64:
-        res += `<p> {${currentPath}.${currentName}} </p>`
-        break;
-      default:
-        break;
-    }
-
     if (currentField.enum != undefined) {
-      res += `<p> {${currentPath}.${currentName}} </p>`
+      body = getEnumView(currentField, currentFieldName)
+    } else if (currentField.message != undefined) {
+      body = getMessageView(currentField.message!, currentFieldName)
+    } else {
+      body = getScalarView(currentField, currentFieldName)
     }
 
-    if (currentField.message != undefined) {
-      res += `<View${currentField.message.name} ${currentPath}={${currentPath}.${currentName}} />`
-    }
+    res += start + body + end
   }
 
-  return res
+  return res.trim()
+}
+
+function getScalarView(currentField: DescField, currentName: string) {
+  switch (currentField.scalar) {
+    case ScalarType.STRING:
+      return `<p> {${currentName}} </p>`
+    case ScalarType.BOOL:
+      return `<p> {${currentName}}  </p>`
+    case ScalarType.INT32 || ScalarType.INT64 || ScalarType.UINT32 || ScalarType.UINT64:
+      return `<p> {${currentName}} </p>`
+    default:
+      return ""
+  }
+}
+
+function getEnumView(currentField: DescField, currentName: string) {
+  return `<p> {${currentName}} </p>`
+}
+
+function getMessageView(message: DescMessage, currentName: string) {
+  return `<View${message.name} ${message.name}={${currentName}} />`
 }

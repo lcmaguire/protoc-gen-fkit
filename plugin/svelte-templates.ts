@@ -1,11 +1,11 @@
-import { DescMessage } from "@bufbuild/protobuf"
+import { DescField, DescMessage, ScalarType } from "@bufbuild/protobuf"
 import { Schema } from "@bufbuild/protoplugin"
 
 
 export function parseTemplate(html: string, message: DescMessage) {
 
   let imports = ""
-  for (let i =0; i < message.fields.length; i++) {
+  for (let i = 0; i < message.fields.length; i++) {
 
     if (message.fields[i].message == null) {
       continue
@@ -23,11 +23,78 @@ export function parseTemplate(html: string, message: DescMessage) {
   // @ts-nocheck
   ${imports}
 
-  export let message;
+  export let ${message.name};
 
 </script>
 
-{#if message != null}
+{#if ${message.name} != null}
+  ${html}
+{/if}
+
+`
+  return getTplate
+}
+
+function defaultRepeatedValue(currentField: DescField) {
+  if (currentField.message != null) {
+    return "{}"
+  }
+
+  switch (currentField.scalar) {
+    case ScalarType.STRING:
+      return `""`
+    case ScalarType.BOOL:
+      return "false"
+    case ScalarType.INT32 || ScalarType.INT64 || ScalarType.UINT32 || ScalarType.UINT64:
+      return "0"
+  }
+}
+
+export function parseEditTemplate(html: string, message: DescMessage): string {
+
+  let imports = ""
+  let repeatedFuncs = ""
+
+  for (let i = 0; i < message.fields.length; i++) {
+    let currentField = message.fields[i]
+    if (message.fields[i].repeated) {
+      repeatedFuncs += `
+      function push${currentField.name}Array() {
+        let emptyVal =  ${defaultRepeatedValue(message.fields[i])}
+        ${message.name}.${message.fields[i].name} = ${message.name}.${message.fields[i].name}.concat(emptyVal)
+      }
+
+      function remove${currentField.name}Array(index) {
+        if (${message.name}.${currentField.name} == undefined) { // if underfined initialize array
+          ${message.name}.${currentField.name} = []
+        }
+        ${message.name}.${currentField.name}.splice(index, 1) // this removes element represented by index.
+        ${message.name}.${currentField.name} = ${message.name}.${currentField.name} // this causes UI to update current values
+      }
+      `
+    }
+
+    if (message.fields[i].message == null) {
+      continue
+    }
+    let name = message.fields[i].message?.name
+    imports += `
+	  import Write${name} from './Write${name}.svelte';
+    `
+  }
+
+  const getTplate = `
+<script>
+  // @ts-nocheck
+  ${imports}
+
+  export let ${message.name};
+
+  ${repeatedFuncs}
+
+</script>
+
+{#if ${message.name} != null}
   ${html}
 {/if}
 
@@ -47,7 +114,7 @@ export function parseAllcomponent(messageName: string) {
 	import ${viewName} from './${viewName}.svelte';
 	import ${writeName} from './${writeName}.svelte';
 
-	export let data;
+	export let ${messageName};
   export let writeFunc;
   export let deleteFunc;
 
@@ -65,12 +132,12 @@ export function parseAllcomponent(messageName: string) {
 
 </script>
 
-{#if data != null && !editable}
-	<${viewName} message={data} />
+{#if ${messageName} != null && !editable}
+	<${viewName} ${messageName}={${messageName}} />
 {/if}
 
 {#if editable }
-	<${writeName} bind:message={data} />
+	<${writeName} bind:${messageName}={${messageName}} />
 
   <br>
   <br>
@@ -343,7 +410,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 
   {#if data != null}
   {#each data.data as item}
-    <${viewComponentName} message={item.message}/>
+    <${viewComponentName} ${messageName}={item.message}/>
     <a href="{item.path}">view more</a>
   {/each}
  {/if}
@@ -406,7 +473,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	}
 </script>
 
-<${allComponentName} data={data.message} writeFunc={writeFunc} deleteFunc={deleteDoc}/>
+<${allComponentName} ${messageName}={data.message} writeFunc={writeFunc} deleteFunc={deleteDoc}/>
   `
 
   const slugComponent = schema.generateFile(`${dir}/[slug]/+page.svelte`);
@@ -448,12 +515,12 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	import { goto } from '$app/navigation';
 	import ${createComponentName} from '$lib/${createComponentName}.svelte';
 
-	let data = {};
+	let ${messageName} = {};
 
 	const writeFunc = async function writeDoc() {
 		let uid = "" // todo change to be path
 		try {
-			uid = await dbAdd("${lowerCaseMessageName}", data);
+			uid = await dbAdd("${lowerCaseMessageName}", ${messageName});
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -462,7 +529,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	}
 </script>
 
-<${createComponentName} message={data} writeFunc={writeFunc}/>
+<${createComponentName} ${messageName}={${messageName}} writeFunc={writeFunc}/>
 `
   const newComponent = schema.generateFile(`${dir}/new/+page.svelte`);
   newComponent.print(newComponentTemplate)

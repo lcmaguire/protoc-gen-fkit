@@ -3,10 +3,10 @@
 	// @ts-nocheck
 	// @ts-ignore
 
-	import ViewFook from './ViewFook.svelte';
-	import WriteFook from './WriteFook.svelte';
+	import ViewFully from './ViewFully.svelte';
+	import WriteFully from './WriteFully.svelte';
 
-	export let Fook;
+	export let Fully;
   export let writeFunc;
   export let deleteFunc;
 
@@ -24,12 +24,12 @@
 
 </script>
 
-{#if Fook != null && !editable}
-	<ViewFook Fook={Fook} />
+{#if Fully != null && !editable}
+	<ViewFully Fully={Fully} />
 {/if}
 
 {#if editable }
-	<WriteFook bind:Fook={Fook} />
+	<WriteFully bind:Fully={Fully} />
 
   <br>
   <br>

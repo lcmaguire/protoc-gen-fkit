@@ -7,6 +7,36 @@ import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialM
 import { Message, proto3 } from "@bufbuild/protobuf";
 
 /**
+ * @generated from enum fook.Rating
+ */
+export declare enum Rating {
+  /**
+   * @generated from enum value: RATING_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: RATING_DISGUSTING = 1;
+   */
+  DISGUSTING = 1,
+
+  /**
+   * @generated from enum value: RATING_BAD = 2;
+   */
+  BAD = 2,
+
+  /**
+   * @generated from enum value: RATING_GOOD = 3;
+   */
+  GOOD = 3,
+
+  /**
+   * @generated from enum value: RATING_EXCELLENT = 4;
+   */
+  EXCELLENT = 4,
+}
+
+/**
  * @generated from message fook.Fook
  */
 export declare class Fook extends Message<Fook> {
@@ -30,6 +60,21 @@ export declare class Fook extends Message<Fook> {
    */
   count: number;
 
+  /**
+   * @generated from field: fook.Rating rating = 5;
+   */
+  rating: Rating;
+
+  /**
+   * @generated from field: fook.Fully fully = 6;
+   */
+  fully?: Fully;
+
+  /**
+   * @generated from field: repeated string words = 7;
+   */
+  words: string[];
+
   constructor(data?: PartialMessage<Fook>);
 
   static readonly runtime: typeof proto3;
@@ -43,5 +88,29 @@ export declare class Fook extends Message<Fook> {
   static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Fook;
 
   static equals(a: Fook | PlainMessage<Fook> | undefined, b: Fook | PlainMessage<Fook> | undefined): boolean;
+}
+
+/**
+ * @generated from message fook.Fully
+ */
+export declare class Fully extends Message<Fully> {
+  /**
+   * @generated from field: string description = 1;
+   */
+  description: string;
+
+  constructor(data?: PartialMessage<Fully>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "fook.Fully";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Fully;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Fully;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Fully;
+
+  static equals(a: Fully | PlainMessage<Fully> | undefined, b: Fully | PlainMessage<Fully> | undefined): boolean;
 }
 
