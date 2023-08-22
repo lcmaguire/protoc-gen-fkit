@@ -3,10 +3,10 @@
 	// @ts-nocheck
 	// @ts-ignore
 
-	import ViewFook from './ViewFook.svelte';
-	import WriteFook from './WriteFook.svelte';
+	import ViewTakeAwayOptions from '$lib//TakeAwayOptions/ViewTakeAwayOptions.svelte';
+	import WriteTakeAwayOptions from '$lib/TakeAwayOptions/WriteTakeAwayOptions.svelte';
 
-	export let Fook;
+	export let TakeAwayOptions;
   export let writeFunc;
   export let deleteFunc;
 
@@ -24,12 +24,12 @@
 
 </script>
 
-{#if Fook != null && !editable}
-	<ViewFook Fook={Fook} />
+{#if TakeAwayOptions != null && !editable}
+	<ViewTakeAwayOptions TakeAwayOptions={TakeAwayOptions} />
 {/if}
 
 {#if editable }
-	<WriteFook bind:Fook={Fook} />
+	<WriteTakeAwayOptions bind:TakeAwayOptions={TakeAwayOptions} />
 
   <br>
   <br>

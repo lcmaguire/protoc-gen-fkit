@@ -3,10 +3,10 @@
 	// @ts-nocheck
 	// @ts-ignore
 
-	import ViewFully from '$lib//Fully/ViewFully.svelte';
-	import WriteFully from '$lib/Fully/WriteFully.svelte';
+	import ViewRestaurant from '$lib//Restaurant/ViewRestaurant.svelte';
+	import WriteRestaurant from '$lib/Restaurant/WriteRestaurant.svelte';
 
-	export let Fully;
+	export let Restaurant;
   export let writeFunc;
   export let deleteFunc;
 
@@ -24,12 +24,12 @@
 
 </script>
 
-{#if Fully != null && !editable}
-	<ViewFully Fully={Fully} />
+{#if Restaurant != null && !editable}
+	<ViewRestaurant Restaurant={Restaurant} />
 {/if}
 
 {#if editable }
-	<WriteFully bind:Fully={Fully} />
+	<WriteRestaurant bind:Restaurant={Restaurant} />
 
   <br>
   <br>
