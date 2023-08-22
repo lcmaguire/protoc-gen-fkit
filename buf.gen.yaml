@@ -2,12 +2,12 @@
 version: v1
 plugins:
   - plugin: buf.build/bufbuild/es
-    out: gen/lib/proto
+    out: my-app/src/lib/gen
   - plugin: buf.build/bufbuild/connect-web
-    out: gen/lib/proto
+    out:  my-app/src/lib/gen
   - name: fkit
     path: ./plugin/protoc-gen-fkit.ts
     opt: 
       - target=ts
-    out: gen
+    out: my-app/src
 
