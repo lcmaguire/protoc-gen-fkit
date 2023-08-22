@@ -34,6 +34,7 @@
 <input bind:value={Restaurant.title} >
 
 
+<input type=number bind:value={Restaurant.price} min=0 >
 
 
 <select bind:value={Restaurant.cleanliness}>

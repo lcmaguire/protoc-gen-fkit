@@ -109,21 +109,21 @@ function genHtmlForMessage(message: DescMessage) {
 function editScalarView(currentField: DescField, currentName: string) {
   switch (currentField.scalar) {
     case ScalarType.STRING:
-      return  `<input bind:value={${currentName}} >\n`
+      return `<input bind:value={${currentName}} >\n`
     case ScalarType.BOOL:
-      return`<input type=checkbox  bind:checked={${currentName}}>\n`
-      ;
-    case ScalarType.INT32 || ScalarType.INT64 || ScalarType.UINT32 || ScalarType.UINT64:
+      return `<input type=checkbox  bind:checked={${currentName}}>\n`
+        ;
+    case ScalarType.INT32: case ScalarType.INT64: case ScalarType.UINT32: case ScalarType.UINT64:
       // todo enforce int in UI here
-      return `<input type=number bind:value={${currentName}} min=0>\n`
-    case ScalarType.FIXED32 || ScalarType.FIXED64 || ScalarType.SFIXED32 || ScalarType.SFIXED64 || ScalarType.DOUBLE || ScalarType.FLOAT:
-      return `<input type=number bind:value={${currentName}} min=0>\n`
+      return `<input type=number bind:value={${currentName}} min=0 step="1" >\n`
+    case ScalarType.FIXED32: case ScalarType.FIXED64: case ScalarType.SFIXED32: case ScalarType.SFIXED64: case ScalarType.DOUBLE: case ScalarType.FLOAT:
+      return `<input type=number bind:value={${currentName}} min=0 >\n`
     default:
-      return ""
+      return `<!-- ${currentField.scalar}  ${currentName} -->`
   }
 }
 
-function editEnumView(currentField: DescField, currentName: string){
+function editEnumView(currentField: DescField, currentName: string) {
   let res = `<select bind:value={${currentName}}>\n`
   for (let i = 0; i < currentField.enum!.values.length; i++) {
     res += `<option value="${currentField.enum!.values[i].name}">${currentField.enum!.values[i].name}</option>\n`
@@ -179,7 +179,7 @@ function getScalarView(currentField: DescField, currentName: string) {
       return `<p> {${currentName}} </p>\n`
     case ScalarType.BOOL:
       return `<p> {${currentName}}  </p>\n`
-    case ScalarType.INT32 || ScalarType.INT64 || ScalarType.UINT32 || ScalarType.UINT64:
+    case ScalarType.INT32: case ScalarType.INT64: case ScalarType.UINT32: case ScalarType.UINT64:
       return `<p> {${currentName}} </p>\n`
     default:
       return ""
