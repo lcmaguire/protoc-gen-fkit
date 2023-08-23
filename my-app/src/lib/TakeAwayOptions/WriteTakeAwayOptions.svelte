@@ -5,9 +5,7 @@
 
   export let TakeAwayOptions;
 
-  if (TakeAwayOptions == null) {
-    TakeAwayOptions = {}
-  }
+  
 
 </script>
 

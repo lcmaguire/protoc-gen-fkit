@@ -15,7 +15,7 @@
 <p> {Restaurant.title} </p>
 
 
-<p> {Restaurant.cleanliness} </p>
+<p> Restaurant.cleanliness : {Restaurant.cleanliness} </p>
 
 {#if Restaurant.tags != null}
 {#each Restaurant.tags as tags}

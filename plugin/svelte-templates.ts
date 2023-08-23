@@ -535,31 +535,3 @@ export function generateRoutes(schema: Schema, messageName: string) {
   const newComponent = schema.generateFile(`${dir}/new/+page.svelte`);
   newComponent.print(newComponentTemplate)
 }
-
-// todo gen these somewhere
-export function generateActionFuncs(schema: Schema) {
-
-  // messageName
-  const deleteAction = `
-  async function deleteDoc() {
-		try {
-			await dbDelete(data.name);
-		} catch (e) {
-			console.error(e);
-		} finally {
-			console.log('We do cleanup here');
-			goto("/")
-		}
-	}
-
-  const writeFunc = async function writeDoc() {
-		try {
-			await dbSet(data);
-		} catch (e) {
-			console.error(e);
-		} finally {
-			goto("/") 
-		}
-	}
-  `
-}
