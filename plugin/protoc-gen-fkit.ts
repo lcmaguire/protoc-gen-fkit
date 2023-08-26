@@ -14,7 +14,8 @@ import type { Schema } from "@bufbuild/protoplugin/ecmascript";
 
 
 import { genAuthComponent, genFirebase, genLayoutPage, generateRoutes, parseAllcomponent, parseCreateComponent, parseEditTemplate, parseViewTemplate, protoCamelCase } from "./svelte-templates";
-
+import { basic } from "./generator"
+import { build } from "$service-worker";
 
 
 const protocGen = createEcmaScriptPlugin({
@@ -52,9 +53,11 @@ function generateCode(schema: Schema, message: DescMessage) {
   const writeComponent = schema.generateFile(writeComponentPath);
   writeComponent.print(parseEditTemplate(genHtmlForMessage(message), message))
 
-  const viewComponentPath = `lib/${messageName}/View${messageName}.svelte`
-  const viewComponent = schema.generateFile(viewComponentPath);
-  viewComponent.print(`${parseViewTemplate(genHtmlViewForMessage(message), message)}`)
+  //const viewComponentPath = `lib/${messageName}/View${messageName}.svelte`
+  //const viewComponent = schema.generateFile(viewComponentPath);
+
+  basic(schema, message)
+  //viewComponent.print(`${parseViewTemplate(genHtmlViewForMessage(message), message)}`)
 
   const allComponentPath = `lib/${messageName}/All${messageName}.svelte`
   const allComponent = schema.generateFile(allComponentPath);
@@ -66,8 +69,7 @@ function generateCode(schema: Schema, message: DescMessage) {
 
   generateRoutes(schema, messageName)
 
-  mkView(schema, gc(schema, message))
-
+  basic(schema, message)
 }
 
 function genHtmlForMessage(message: DescMessage) {
@@ -144,11 +146,7 @@ function genHtmlViewForMessage(message: DescMessage) {
 
   for (let i in message.fields) {
     let currentField = message.fields[i]
-    let currentFieldName = currentField.jsonName
-    if (currentFieldName == undefined) { // todo see if this is ever used.
-      currentFieldName = currentField.name
-    }
-    currentFieldName = protoCamelCase(currentFieldName)
+    let currentFieldName = protoCamelCase(currentField.name)
 
     let start = ""
     let body = ""
@@ -180,7 +178,8 @@ function getScalarView(currentField: DescField, currentName: string) {
       return `<p> {${currentName}} </p>\n`
     case ScalarType.BOOL:
       return `<p> {${currentName}}  </p>\n`
-    case ScalarType.INT32: case ScalarType.INT64: case ScalarType.UINT32: case ScalarType.UINT64:
+    case ScalarType.INT32: case ScalarType.INT64: case ScalarType.UINT32: case ScalarType.UINT64: ScalarType.FIXED32;
+    case ScalarType.FIXED64: case ScalarType.SFIXED32: case ScalarType.SFIXED64: case ScalarType.DOUBLE: case ScalarType.FLOAT:
       return `<p> {${currentName}} </p>\n`
     default:
       return ""
@@ -194,89 +193,3 @@ function getEnumView(currentField: DescField, currentName: string) {
 function getMessageView(message: DescMessage, currentName: string) {
   return `<View${message.name} ${message.name}={${currentName}} />\n`
 }
-
-interface fieldInfo {
-  parentMessage: string;
-  type: ScalarType;
-  repeated: boolean;
-  fieldKind: string;
-}
-
-function gc(schema: Schema, message: DescMessage) {
-  let mapFields = new Map<string, fieldInfo>();
-
-  let messageName = protoCamelCase(message.name)
-  for (let i = 0; i < message.fields.length; i++) {
-    let currentField = message.fields[i]
-    currentField.fieldKind
-
-    let fi = {
-      parentMessage: messageName,
-      type: currentField.scalar!,
-      repeated: currentField.repeated,
-      fieldKind: currentField.fieldKind,
-    }
-    mapFields.set(protoCamelCase(currentField.name), fi)
-
-  }
-
-  return mapFields
-}
-
-
-function mkView(schema: Schema, mapFields: Map<string, fieldInfo>) {
-
-  //mapFields.forEach()
-
-  // todo figure out correct typescript config to use what is below.
-  // Type 'Map<string, fieldInfo>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
-  // requires some ts.config work.
-  //for (let [key, value] of mapFields) {
-  //  console.log(key, value);
-  //}
-
-  //for (let key of Array.from(mapFields.keys())) {
-  // let curr = mapFields.get(key)
-  // }
-
-  let newFile = schema.generateFile("test.md")
-
-  mapFields.forEach(function (value: fieldInfo, key: string, mapFields: Map<string, fieldInfo>) {
-
-    let repeatable = value.repeated
-
-    // todo figure out how to do multiple declarations on one line.
-    let start = ""
-    let body = ""
-    let end = ""
-
-    let spacing = ""
-    if (value.repeated) {
-      spacing = "\t"
-      newFile.print(`{#each ${value.parentMessage}.${key} as ${key}, key}`)
-      end = "{/each}"
-    }
-
-    //if (value.fieldKind == "enum") {
-      newFile.print(`${spacing} ${key}  ${value.fieldKind} `)
-    //}
-
-    newFile.print(end)
-
-  })
-
-
-}
-
-
-
-/*
-  for message get
-
-  map[fieldName] {
-    baseMessage
-    type ( scalar, message)
-    repeated
-
-  }
-*/ 

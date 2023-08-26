@@ -12,19 +12,20 @@
 {#if Restaurant != null}
   <h3> Restaurant</h3>
 
-<p> {Restaurant.title} </p>
+<p> {Restaurant.titleJSON} </p>
 
+<p> {Restaurant.priceJSON} </p>
 
-<p> Restaurant.cleanliness : {Restaurant.cleanliness} </p>
+<p> Restaurant.cleanlinessJSON : {Restaurant.cleanlinessJSON} </p>
 
-{#if Restaurant.tags != null}
-{#each Restaurant.tags as tags}
-<p> {tags} </p>
+{#if Restaurant.tagsJSON != null}
+{#each Restaurant.tagsJSON as tagsJSON}
+<p> {tagsJSON} </p>
 
 {/each}
 {/if}
 
-<ViewTakeAwayOptions TakeAwayOptions={Restaurant.takeAway} />
+<ViewTakeAwayOptions TakeAwayOptions={Restaurant.takeAwayJSON} />
 {/if}
 
 
