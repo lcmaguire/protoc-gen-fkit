@@ -2,36 +2,6 @@ import { DescField, DescMessage, ScalarType } from "@bufbuild/protobuf"
 import { Schema } from "@bufbuild/protoplugin"
 
 
-export function parseViewTemplate(html: string, message: DescMessage) {
-
-  let imports = ""
-  for (let i = 0; i < message.fields.length; i++) {
-
-    if (message.fields[i].message == null) {
-      continue
-    }
-    let name = message.fields[i].message?.name
-    imports += `
-    import View${name} from '$lib/${name}/View${name}.svelte';
-    `
-  }
-
-  const getTplate = `
-<script>
-  // @ts-nocheck
-  ${imports}
-
-  export let ${message.name};
-
-</script>
-
-{#if ${message.name} != null}
-  ${html}
-{/if}
-
-`
-  return getTplate
-}
 
 function defaultRepeatedValue(currentField: DescField) {
   if (currentField.message != null) {

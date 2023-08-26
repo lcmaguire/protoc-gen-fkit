@@ -4,11 +4,10 @@ import { protoCamelCase } from "./svelte-templates";
 
 
 export function basic(schema: Schema, message: DescMessage) {
-
     let funcsToImport: string[] = []
     let messagesToImport: string[] = []
     let messageName = protoCamelCase(message.name) // todo this could wig some stuff out.
-    
+
 
     let res = ""
     for (let i in message.fields) {
@@ -18,22 +17,28 @@ export function basic(schema: Schema, message: DescMessage) {
         let start = ""
         let body = ""
         let end = ""
+
+        let spacing = ``
         if (currentField.repeated) {
-            // todo add imported here
-            start = `{#if ${messageName}.${currentFieldName} != null}\n{#each ${messageName}.${currentFieldName} as ${currentFieldName}}\n`
-            end = `\n{/each}\n{/if}\n`
+            // todo append imported func here
+            spacing = `  `
+            start = `{#if ${messageName}.${currentFieldName} != null}\n`
+            start += `${spacing}{#each ${messageName}.${currentFieldName} as ${currentFieldName}}\n`
+            end = `${spacing}{/each}\n`
+            end += `{/if}\n`
+            spacing +=`  `
         } else {
             currentFieldName = `${messageName}.${currentFieldName}`
         }
         res += "\n"
 
         if (currentField.enum != undefined) {
-            body = getEnumView(currentField, currentFieldName)
+            body = spacing + getEnumView(currentField, currentFieldName)
         } else if (currentField.message != undefined) {
             messagesToImport.push(protoCamelCase(currentField.message!.name))
-            body = getMessageView(currentField.message!, currentFieldName)
+            body = spacing + getMessageView(currentField.message!, currentFieldName)
         } else {
-            body = getScalarView(currentField, currentFieldName)
+            body = spacing + getScalarView(currentField, currentFieldName)
         }
         res += start + body + end
     }
@@ -43,7 +48,7 @@ export function basic(schema: Schema, message: DescMessage) {
     // build html then do imports after.
     let newFile = schema.generateFile(`lib/${messageName}/View${messageName}.svelte`)
 
-    let spacing = "\s\s"
+    let spacing = `  `
     // svelte component
     newFile.print("<script>")
     newFile.print(`${spacing}// @ts-nocheck`)
@@ -57,7 +62,7 @@ export function basic(schema: Schema, message: DescMessage) {
         //newFile.print(`${spacing}import View${importMessage} from "$lib/${importMessage}/View${importMessage}.svelte";`)
     }
 
-    newFile.print(`${spacing}export let ${messageName}`)
+    newFile.print(`${spacing}export let ${messageName} = {};`)
 
     newFile.print("</script>")
     newFile.print("")

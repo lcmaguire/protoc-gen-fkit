@@ -1,22 +1,13 @@
-
 <script>
   // @ts-nocheck
-  
-
-  export let TakeAwayOptions;
-
+  export let TakeAwayOptions = {};
 </script>
 
-{#if TakeAwayOptions != null}
-  <h3> TakeAwayOptions</h3>
+<p> {TakeAwayOptions.pickup}  </p>
 
-<p> {TakeAwayOptions.pickupJSON}  </p>
+<p> {TakeAwayOptions.phone}  </p>
 
-<p> {TakeAwayOptions.phoneJSON}  </p>
+<p> {TakeAwayOptions.uber}  </p>
 
-<p> {TakeAwayOptions.uberJSON}  </p>
-
-<p> {TakeAwayOptions.doorDashJSON}  </p>
-{/if}
-
+<p> {TakeAwayOptions.doorDash}  </p>
 
