@@ -4,15 +4,15 @@
   export let Restaurant = {};
 </script>
 
-<p> {Restaurant.title} </p>
+<p> Restaurant.title : {Restaurant.title} </p>
 
-<p> {Restaurant.price} </p>
+<p> Restaurant.price : {Restaurant.price} </p>
 
 <p> Restaurant.cleanliness : {Restaurant.cleanliness} </p>
 
 {#if Restaurant.tags != null}
   {#each Restaurant.tags as tags}
-    <p> {tags} </p>
+    <p> tags : {tags} </p>
   {/each}
 {/if}
 

@@ -26,7 +26,7 @@ export function basic(schema: Schema, message: DescMessage) {
             start += `${spacing}{#each ${messageName}.${currentFieldName} as ${currentFieldName}}\n`
             end = `${spacing}{/each}\n`
             end += `{/if}\n`
-            spacing +=`  `
+            spacing += `  `
         } else {
             currentFieldName = `${messageName}.${currentFieldName}`
         }
@@ -74,12 +74,12 @@ export function basic(schema: Schema, message: DescMessage) {
 function getScalarView(currentField: DescField, currentName: string) {
     switch (currentField.scalar) {
         case ScalarType.STRING:
-            return `<p> {${currentName}} </p>\n`
+            return `<p> ${currentName} : {${currentName}} </p>\n`
         case ScalarType.BOOL:
-            return `<p> {${currentName}}  </p>\n`
+            return `<p> ${currentName} : {${currentName}}  </p>\n`
         case ScalarType.INT32: case ScalarType.INT64: case ScalarType.UINT32: case ScalarType.UINT64: ScalarType.FIXED32;
         case ScalarType.FIXED64: case ScalarType.SFIXED32: case ScalarType.SFIXED64: case ScalarType.DOUBLE: case ScalarType.FLOAT:
-            return `<p> {${currentName}} </p>\n`
+            return `<p> ${currentName} : {${currentName}} </p>\n`
         default:
             return ""
     }
