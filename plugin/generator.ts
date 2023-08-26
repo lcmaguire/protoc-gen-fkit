@@ -23,7 +23,7 @@ export function basic(schema: Schema, message: DescMessage) {
             // todo append imported func here
             spacing = `  `
             start = `{#if ${messageName}.${currentFieldName} != null}\n`
-            start += `${spacing}{#each ${messageName}.${currentFieldName} as ${currentFieldName}}\n`
+            start += `${spacing}{#each ${messageName}.${currentFieldName} as ${currentFieldName}}\n` // add in key, add in button
             end = `${spacing}{/each}\n`
             end += `{/if}\n`
             spacing += `  `
