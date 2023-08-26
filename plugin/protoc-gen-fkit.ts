@@ -14,7 +14,7 @@ import type { Schema } from "@bufbuild/protoplugin/ecmascript";
 
 
 import { genAuthComponent, genFirebase, genLayoutPage, generateRoutes, parseAllcomponent, parseCreateComponent, parseEditTemplate, protoCamelCase } from "./svelte-templates";
-import { basic } from "./generator"
+import { basicEdit, basicView } from "./generator"
 import { build } from "$service-worker";
 
 
@@ -49,11 +49,12 @@ function generateCode(schema: Schema, message: DescMessage) {
   // generate message for name.
   const messageName = message.name
 
-  const writeComponentPath = `lib/${messageName}/Write${messageName}.svelte`
-  const writeComponent = schema.generateFile(writeComponentPath);
-  writeComponent.print(parseEditTemplate(genHtmlForMessage(message), message))
+  //const writeComponentPath = `lib/${messageName}/Write${messageName}.svelte`
+  //const writeComponent = schema.generateFile(writeComponentPath);
+  //writeComponent.print(parseEditTemplate(genHtmlForMessage(message), message))
 
-  basic(schema, message) // todo renmae to view
+  basicEdit(schema, message) // todo renmae to view
+  basicView(schema, message) // todo renmae to view
 
   const allComponentPath = `lib/${messageName}/All${messageName}.svelte`
   const allComponent = schema.generateFile(allComponentPath);
@@ -67,70 +68,4 @@ function generateCode(schema: Schema, message: DescMessage) {
 
 }
 
-function genHtmlForMessage(message: DescMessage) {
-  let messageName = message.name
-  let res = `<h3> ${messageName}</h3>\n`
 
-  for (let i in message.fields) {
-    let currentField = message.fields[i]
-    let currentFieldName = currentField.jsonName
-    if (currentFieldName == undefined) {
-      currentFieldName = currentField.name
-    }
-    currentFieldName = protoCamelCase(currentFieldName)
-
-    res += "\n"
-
-    let start = ""
-    let body = ""
-    let end = ""
-    if (currentField.repeated) {
-      start = `{#if ${messageName}.${currentFieldName} != null}\n{#each ${messageName}.${currentFieldName} as ${currentFieldName}, key}\n`
-      end = `<button on:click={() => remove${currentFieldName}Array(key)}> - </button>\n{/each}\n{/if}\n<button on:click={push${currentFieldName}Array}> + </button>\n`
-    } else {
-      currentFieldName = `${messageName}.${currentFieldName}`
-    }
-    res += "\n"
-
-    if (currentField.enum != undefined) {
-      body = editEnumView(currentField, currentFieldName)
-    } else if (currentField.message != undefined) {
-      body = editMessageView(currentField.message!, currentFieldName)
-    } else {
-      body = editScalarView(currentField, currentFieldName)
-    }
-    res += start + body + end
-  }
-
-  return res
-}
-
-function editScalarView(currentField: DescField, currentName: string) {
-  switch (currentField.scalar) {
-    case ScalarType.STRING:
-      return `<input bind:value={${currentName}} >\n`
-    case ScalarType.BOOL:
-      return `<input type=checkbox  bind:checked={${currentName}}>\n`
-        ;
-    case ScalarType.INT32: case ScalarType.INT64: case ScalarType.UINT32: case ScalarType.UINT64:
-      // todo enforce int in UI here
-      return `<input type=number bind:value={${currentName}} min=0 step="1" >\n`
-    case ScalarType.FIXED32: case ScalarType.FIXED64: case ScalarType.SFIXED32: case ScalarType.SFIXED64: case ScalarType.DOUBLE: case ScalarType.FLOAT:
-      return `<input type=number bind:value={${currentName}} min=0 >\n`
-    default:
-      return `<!-- ${currentField.scalar}  ${currentName} -->`
-  }
-}
-
-function editEnumView(currentField: DescField, currentName: string) {
-  let res = `<select bind:value={${currentName}}>\n`
-  for (let i = 0; i < currentField.enum!.values.length; i++) {
-    res += `<option value="${currentField.enum!.values[i].name}">${currentField.enum!.values[i].name}</option>\n`
-  }
-  res += `</select>\n`
-  return res
-}
-
-function editMessageView(message: DescMessage, currentName: string) {
-  return `<Write${message.name} bind:${message.name}={${currentName}} />\n`
-}
