@@ -58,10 +58,7 @@ export function basicView(schema: Schema, message: DescMessage) {
         newFile.print(`${spacing}import View${importMessage} from "$lib/${importMessage}/View${importMessage}.svelte";`)
     }
 
-    for (let i in funcsToImport) { // todo have this be done for all views.
-        //let importMessage = messageInfo.messagesToImport[i]
-        //newFile.print(`${spacing}import View${importMessage} from "$lib/${importMessage}/View${importMessage}.svelte";`)
-    }
+    for (let i in funcsToImport) { }// todo have this be done for all views.}
 
     newFile.print(`${spacing}export let ${messageName} = {};`)
 
