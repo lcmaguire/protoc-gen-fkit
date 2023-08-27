@@ -14,7 +14,7 @@ import type { Schema } from "@bufbuild/protoplugin/ecmascript";
 
 
 import { genAuthComponent, genFirebase, genLayoutPage, generateRoutes, parseAllcomponent, parseCreateComponent } from "./svelte-templates";
-import { basicGeneric } from "./generator"
+import { generateViewForType } from "./generator"
 import { build } from "$service-worker";
 
 
@@ -49,12 +49,10 @@ function generateCode(schema: Schema, message: DescMessage) {
   // generate message for name.
   const messageName = message.name
   
-  basicGeneric(schema, message, "View")
-  basicGeneric(schema, message, "Write")
+  generateViewForType(schema, message, "View")
+  generateViewForType(schema, message, "Write")
 
-  const allComponentPath = `lib/${messageName}/All${messageName}.svelte`
-  const allComponent = schema.generateFile(allComponentPath);
-  allComponent.print(parseAllcomponent(messageName))
+  parseAllcomponent(schema, messageName)
 
   const createComponentPath = `lib/${messageName}/Create${messageName}.svelte`
   const createComponent = schema.generateFile(createComponentPath);

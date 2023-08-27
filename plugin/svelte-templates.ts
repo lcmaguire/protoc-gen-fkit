@@ -1,36 +1,38 @@
 import { DescField, DescMessage, ScalarType } from "@bufbuild/protobuf"
 import { Schema } from "@bufbuild/protoplugin"
+import { genMessage } from "./generator";
 
 
-export function parseAllcomponent(messageName: string) {
+export function parseAllcomponent(schema: Schema, messageName: string) {
+
+  const allComponentPath = `lib/${messageName}/All${messageName}.svelte`
+  const allComponent = schema.generateFile(allComponentPath);
 
   const viewName = `View${messageName}`
   const writeName = `Write${messageName}`
+
+  allComponent.print(genMessage)
+  allComponent.print(`<script>`)
+  allComponent.print(`  // @ts-nocheck`)
+  allComponent.print(`  // @ts-ignore`)
+  allComponent.print(`  import ${viewName} from '$lib//${messageName}/${viewName}.svelte';`)
+  allComponent.print(`  import ${writeName} from '$lib/${messageName}/${writeName}.svelte';`)
+  allComponent.print(`  export let ${messageName};`)
+  allComponent.print(`  export let writeFunc;`)
+  allComponent.print(`  export let deleteFunc;`)
+  allComponent.print(`  let editable = false;`)
+  allComponent.print(`  function toggle() {editable = !editable;}`)
+  allComponent.print(`  // this will toggle from edit view to just view`)
+  allComponent.print(`  function writeWrapper () {`)
+  allComponent.print(`    writeFunc()`)
+  allComponent.print(`    toggle()`)
+  allComponent.print(`  }`)
+
+  allComponent.print(`</script>`)
+
+
+
   const allTemplate = `
-<script>
-	// @ts-nocheck
-	// @ts-ignore
-
-	import ${viewName} from '$lib//${messageName}/${viewName}.svelte';
-	import ${writeName} from '$lib/${messageName}/${writeName}.svelte';
-
-	export let ${messageName};
-  export let writeFunc;
-  export let deleteFunc;
-
-	let editable = false;
-
-	function toggle() {
-		editable = !editable;
-	}
-
-  // this will toggle from edit view to just view 
-  function writeWrapper () {
-		writeFunc()
-		toggle() 
-	}
-
-</script>
 
 {#if ${messageName} != null && !editable}
 	<${viewName} ${messageName}={${messageName}} />
@@ -54,7 +56,7 @@ export function parseAllcomponent(messageName: string) {
 
   `
 
-  return allTemplate
+  allComponent.print(allTemplate.trim())
 }
 
 export function parseCreateComponent(messageName: string,) {
@@ -66,19 +68,18 @@ export function parseCreateComponent(messageName: string,) {
 	// @ts-ignore
 
 	import ${writeName} from '$lib/${messageName}/${writeName}.svelte';
-
 	export let ${messageName};
   export let writeFunc;
 
 </script>
 
-	<${writeName} bind:${messageName}={${messageName}} />
+<${writeName} bind:${messageName}={${messageName}} />
 
-	<button on:click={writeFunc}> save </button>
+<button on:click={writeFunc}> save </button>
 
-  `
+`
 
-  return allTemplate
+  return allTemplate.trim()
 }
 
 export function protoCamelCase(snakeCase: string): string {

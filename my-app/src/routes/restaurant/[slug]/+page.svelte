@@ -11,14 +11,15 @@
 
 	export let data;
 
-	const writeFunc = async function writeDoc() {
-		try {
+	function writeFunc() {
+		goto(`/restaurant/${data.uid}/update`) 
+		/*try {
 			await dbSet(`/restaurant/${data.uid}`, data.message);
 		} catch (e) {
 			console.error(e);
 		} finally {
       goto(`/restaurant/${data.uid}`) 
-		}
+		}*/
 	}
 
 	async function deleteDoc() {

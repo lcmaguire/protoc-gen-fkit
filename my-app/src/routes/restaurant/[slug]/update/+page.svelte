@@ -8,6 +8,7 @@
 	import { dbSet, dbDelete } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
+    import CreateRestaurant from '$lib/Restaurant/CreateRestaurant.svelte';
 
 	export let data;
 
@@ -20,17 +21,7 @@
       goto(`/restaurant/${data.uid}`) 
 		}
 	}
-
-	async function deleteDoc() {
-		try {
-			await dbDelete(`/restaurant/${data.uid}`);
-		} catch (e) {
-			console.error(e);
-		} finally {
-      goto("/restaurant") 
-		}
-	}
 </script>
 
-<AllRestaurant Restaurant={data.message} writeFunc={writeFunc} deleteFunc={deleteDoc}/>
+<CreateRestaurant Restaurant={data.message} writeFunc={writeFunc}/>
   
