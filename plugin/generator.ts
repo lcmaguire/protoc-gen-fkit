@@ -99,11 +99,7 @@ export function basicEdit(schema: Schema, message: DescMessage) {
     let res = ""
     for (let i in message.fields) {
         let currentField = message.fields[i]
-        let currentFieldName = currentField.jsonName
-        if (currentFieldName == undefined) {
-            currentFieldName = currentField.name
-        }
-        currentFieldName = protoCamelCase(currentFieldName)
+        let currentFieldName = protoCamelCase(currentField.name)
 
         res += "\n"
 
