@@ -5,17 +5,15 @@
   export let Restaurant = {};
 </script>
 
-<p> Restaurant.title : {Restaurant.title} </p>
-
-<p> Restaurant.price : {Restaurant.price} </p>
-
-<p> Restaurant.cleanliness : {Restaurant.cleanliness} </p>
-
+<div class="Restaurant">
+<p class="Restaurant.title"> Restaurant.title : {Restaurant.title} </p>
+<p class="Restaurant.price"> Restaurant.price : {Restaurant.price} </p>
+<p class="Restaurant.cleanliness"> Restaurant.cleanliness : {Restaurant.cleanliness} </p>
 {#if Restaurant.tags != null}
   {#each Restaurant.tags as tags}
-    <p> tags : {tags} </p>
+    <p class="tags"> tags : {tags} </p>
   {/each}
 {/if}
-
 <ViewTakeAwayOptions TakeAwayOptions={Restaurant.takeAway} />
+</div>
 

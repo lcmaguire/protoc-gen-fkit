@@ -26,9 +26,10 @@ export function generateViewForType(schema: Schema, message: DescMessage, viewTy
         if (currentField.repeated) {
             if (checkWriteType(viewType)) {
                 spacing += `    `
-                start = `{#if ${messageName}.${currentFieldName} != null}\n`
+                start = `<label for="${currentFieldName}"> ${currentFieldName} </label><br>`
+                start += `{#if ${messageName}.${currentFieldName} != null}\n`
                 start += `  {#each ${messageName}.${currentFieldName} as ${currentFieldName}, key}\n`
-                end = `${spacing}<button on:click={() => remove${currentFieldName}Array(key)}> Remove from ${currentFieldName}</button>\n`
+                end = `${spacing}<button on:click={() => remove${currentFieldName}Array(key)}> Remove from ${currentFieldName}</button><br>\n`
 
                 end += `  {/each}\n`
                 end += `{/if}\n`
@@ -46,13 +47,13 @@ export function generateViewForType(schema: Schema, message: DescMessage, viewTy
         } else {
             currentFieldName = `${messageName}.${currentFieldName}`
         }
-        res += "\n"
 
         if (currentField.enum != undefined) {
             if (checkWriteType(viewType)) {
-                body = spacing + editEnumView(currentField, currentFieldName)
+                body += `<label for="${currentFieldName}"> ${currentFieldName} </label>\n`
+                body += spacing + editEnumView(currentField, currentFieldName)
             } else {
-                body = spacing + getEnumView(currentField, currentFieldName)
+                body += spacing + getEnumView(currentField, currentFieldName)
             }
 
         } else if (currentField.message != undefined) {
@@ -64,7 +65,12 @@ export function generateViewForType(schema: Schema, message: DescMessage, viewTy
             }
         } else {
             if (checkWriteType(viewType)) {
-                body = spacing + editScalarView(currentField, currentFieldName)
+                if (!currentField.repeated) {
+                    body += `<label for="${currentFieldName}"> ${currentFieldName} </label>\n`
+                    body += spacing + editScalarView(currentField, currentFieldName) + "<br>"
+                } else {
+                    body += spacing + editScalarView(currentField, currentFieldName)
+                }
             } else {
                 body = spacing + getScalarView(currentField, currentFieldName)
             }
@@ -99,7 +105,9 @@ export function generateViewForType(schema: Schema, message: DescMessage, viewTy
 
     newFile.print("</script>")
     newFile.print("")
+    newFile.print(`<div class="${messageName}">`)
     newFile.print(res)
+    newFile.print("</div>")
     newFile.print("")
 }
 
@@ -118,19 +126,19 @@ function checkWriteType(viewType: string) {
 function getScalarView(currentField: DescField, currentName: string) {
     switch (currentField.scalar) {
         case ScalarType.STRING:
-            return `<p> ${currentName} : {${currentName}} </p>\n`
+            return `<p class="${currentName}"> ${currentName} : {${currentName}} </p>\n`
         case ScalarType.BOOL:
-            return `<p> ${currentName} : {${currentName}}  </p>\n`
+            return `<p class="${currentName}"> ${currentName} : {${currentName}}  </p>\n`
         case ScalarType.INT32: case ScalarType.INT64: case ScalarType.UINT32: case ScalarType.UINT64: ScalarType.FIXED32;
         case ScalarType.FIXED64: case ScalarType.SFIXED32: case ScalarType.SFIXED64: case ScalarType.DOUBLE: case ScalarType.FLOAT:
-            return `<p> ${currentName} : {${currentName}} </p>\n`
+            return `<p class="${currentName}"> ${currentName} : {${currentName}} </p>\n`
         default:
             return ""
     }
 }
 
 function getEnumView(currentField: DescField, currentName: string) {
-    return `<p> ${currentName} : {${currentName}} </p>\n`
+    return `<p class="${currentName}"> ${currentName} : {${currentName}} </p>\n`
 }
 
 function getMessageView(message: DescMessage, currentName: string) {
@@ -140,15 +148,15 @@ function getMessageView(message: DescMessage, currentName: string) {
 function editScalarView(currentField: DescField, currentName: string) {
     switch (currentField.scalar) {
         case ScalarType.STRING:
-            return `<input bind:value={${currentName}} >\n`
+            return `<input class="${currentName}" bind:value={${currentName}} >\n`
         case ScalarType.BOOL:
-            return `<input type=checkbox  bind:checked={${currentName}}>\n`
+            return `<input class="${currentName}" type=checkbox  bind:checked={${currentName}}>\n`
                 ;
         case ScalarType.INT32: case ScalarType.INT64: case ScalarType.UINT32: case ScalarType.UINT64:
             // todo enforce int in UI here
-            return `<input type=number bind:value={${currentName}} min=0 step="1" >\n`
+            return `<input class="${currentName}" type=number bind:value={${currentName}} min=0 step="1" >\n`
         case ScalarType.FIXED32: case ScalarType.FIXED64: case ScalarType.SFIXED32: case ScalarType.SFIXED64: case ScalarType.DOUBLE: case ScalarType.FLOAT:
-            return `<input type=number bind:value={${currentName}} min=0 >\n`
+            return `<input class="${currentName}" type=number bind:value={${currentName}} min=0 >\n`
         default:
             return `<!-- ${currentField.scalar}  ${currentName} -->`
     }
@@ -159,7 +167,7 @@ function editEnumView(currentField: DescField, currentName: string) {
     for (let i = 0; i < currentField.enum!.values.length; i++) {
         res += `<option value="${currentField.enum!.values[i].name}">${currentField.enum!.values[i].name}</option>\n`
     }
-    res += `</select>\n`
+    res += `</select><br>\n`
     return res
 }
 
@@ -183,3 +191,5 @@ function defaultRepeatedValue(currentField: DescField) {
     }
     return ""
 }
+
+// type -> { html element class}

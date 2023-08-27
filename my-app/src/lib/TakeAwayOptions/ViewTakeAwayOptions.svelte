@@ -4,11 +4,10 @@
   export let TakeAwayOptions = {};
 </script>
 
-<p> TakeAwayOptions.pickup : {TakeAwayOptions.pickup}  </p>
-
-<p> TakeAwayOptions.phone : {TakeAwayOptions.phone}  </p>
-
-<p> TakeAwayOptions.uber : {TakeAwayOptions.uber}  </p>
-
-<p> TakeAwayOptions.doorDash : {TakeAwayOptions.doorDash}  </p>
+<div class="TakeAwayOptions">
+<p class="TakeAwayOptions.pickup"> TakeAwayOptions.pickup : {TakeAwayOptions.pickup}  </p>
+<p class="TakeAwayOptions.phone"> TakeAwayOptions.phone : {TakeAwayOptions.phone}  </p>
+<p class="TakeAwayOptions.uber"> TakeAwayOptions.uber : {TakeAwayOptions.uber}  </p>
+<p class="TakeAwayOptions.doorDash"> TakeAwayOptions.doorDash : {TakeAwayOptions.doorDash}  </p>
+</div>
 
