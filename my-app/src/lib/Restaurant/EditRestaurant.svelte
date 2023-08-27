@@ -9,11 +9,11 @@
 </script>
 
 <div class="Restaurant">
-<label for="Restaurant.title"> Restaurant.title </label>
-<input class="Restaurant.title" bind:value={Restaurant.title} >
-<br><label for="Restaurant.price"> Restaurant.price </label>
-<input class="Restaurant.price" type=number bind:value={Restaurant.price} min=0 >
-<br><label for="Restaurant.cleanliness"> Restaurant.cleanliness </label>
+<label for="Restaurant-title"> Restaurant.title </label>
+<input class="Restaurant-title" bind:value={Restaurant.title} >
+<br><label for="Restaurant-price"> Restaurant.price </label>
+<input class="Restaurant-price" type=number bind:value={Restaurant.price} min=0 >
+<br><label for="Restaurant-cleanliness"> Restaurant.cleanliness </label>
 <select bind:value={Restaurant.cleanliness}>
 <option value="CLEANLINESS_UNSPECIFIED">CLEANLINESS_UNSPECIFIED</option>
 <option value="CLEANLINESS_DISGUSTING">CLEANLINESS_DISGUSTING</option>

@@ -26,7 +26,7 @@ export function generateViewForType(schema: Schema, message: DescMessage, viewTy
         if (currentField.repeated) {
             if (checkWriteType(viewType)) {
                 spacing += `    `
-                start = `<label for="${currentFieldName}"> ${currentFieldName} </label><br>`
+                start = `<label for="${protoPathToCssPath(currentFieldName)}"> ${currentFieldName} </label><br>`
                 start += `{#if ${messageName}.${currentFieldName} != null}\n`
                 start += `  {#each ${messageName}.${currentFieldName} as ${currentFieldName}, key}\n`
                 end = `${spacing}<button on:click={() => remove${currentFieldName}Array(key)}> Remove from ${currentFieldName}</button><br>\n`
@@ -50,7 +50,7 @@ export function generateViewForType(schema: Schema, message: DescMessage, viewTy
 
         if (currentField.enum != undefined) {
             if (checkWriteType(viewType)) {
-                body += `<label for="${currentFieldName}"> ${currentFieldName} </label>\n`
+                body += `<label for="${protoPathToCssPath(currentFieldName)}"> ${currentFieldName} </label>\n`
                 body += spacing + editEnumView(currentField, currentFieldName)
             } else {
                 body += spacing + getEnumView(currentField, currentFieldName)
@@ -66,7 +66,7 @@ export function generateViewForType(schema: Schema, message: DescMessage, viewTy
         } else {
             if (checkWriteType(viewType)) {
                 if (!currentField.repeated) {
-                    body += `<label for="${currentFieldName}"> ${currentFieldName} </label>\n`
+                    body += `<label for="${protoPathToCssPath(currentFieldName)}"> ${currentFieldName} </label>\n`
                     body += spacing + editScalarView(currentField, currentFieldName) + "<br>"
                 } else {
                     body += spacing + editScalarView(currentField, currentFieldName)
@@ -105,7 +105,7 @@ export function generateViewForType(schema: Schema, message: DescMessage, viewTy
 
     newFile.print("</script>")
     newFile.print("")
-    newFile.print(`<div class="${messageName}">`)
+    newFile.print(`<div class="${protoPathToCssPath(messageName)}">`)
     newFile.print(res)
     newFile.print("</div>")
     newFile.print("")
@@ -125,19 +125,19 @@ function checkWriteType(viewType: string) {
 function getScalarView(currentField: DescField, currentName: string) {
     switch (currentField.scalar) {
         case ScalarType.STRING:
-            return `<p class="${currentName}"> ${currentName} : {${currentName}} </p>\n`
+            return `<p class="${protoPathToCssPath(currentName)}"> ${currentName} : {${currentName}} </p>\n`
         case ScalarType.BOOL:
-            return `<p class="${currentName}"> ${currentName} : {${currentName}}  </p>\n`
+            return `<p class="${protoPathToCssPath(currentName)}"> ${currentName} : {${currentName}}  </p>\n`
         case ScalarType.INT32: case ScalarType.INT64: case ScalarType.UINT32: case ScalarType.UINT64: ScalarType.FIXED32;
         case ScalarType.FIXED64: case ScalarType.SFIXED32: case ScalarType.SFIXED64: case ScalarType.DOUBLE: case ScalarType.FLOAT:
-            return `<p class="${currentName}"> ${currentName} : {${currentName}} </p>\n`
+            return `<p class="${protoPathToCssPath(currentName)}"> ${currentName} : {${currentName}} </p>\n`
         default:
             return ""
     }
 }
 
 function getEnumView(currentField: DescField, currentName: string) {
-    return `<p class="${currentName}"> ${currentName} : {${currentName}} </p>\n`
+    return `<p class="${protoPathToCssPath(currentName)}"> ${currentName} : {${currentName}} </p>\n`
 }
 
 function getMessageView(message: DescMessage, currentName: string) {
@@ -147,15 +147,15 @@ function getMessageView(message: DescMessage, currentName: string) {
 function editScalarView(currentField: DescField, currentName: string) {
     switch (currentField.scalar) {
         case ScalarType.STRING:
-            return `<input class="${currentName}" bind:value={${currentName}} >\n`
+            return `<input class="${protoPathToCssPath(currentName)}" bind:value={${currentName}} >\n`
         case ScalarType.BOOL:
-            return `<input class="${currentName}" type=checkbox  bind:checked={${currentName}}>\n`
+            return `<input class="${protoPathToCssPath(currentName)}" type=checkbox  bind:checked={${currentName}}>\n`
                 ;
         case ScalarType.INT32: case ScalarType.INT64: case ScalarType.UINT32: case ScalarType.UINT64:
             // todo enforce int in UI here
-            return `<input class="${currentName}" type=number bind:value={${currentName}} min=0 step="1" >\n`
+            return `<input class="${protoPathToCssPath(currentName)}" type=number bind:value={${currentName}} min=0 step="1" >\n`
         case ScalarType.FIXED32: case ScalarType.FIXED64: case ScalarType.SFIXED32: case ScalarType.SFIXED64: case ScalarType.DOUBLE: case ScalarType.FLOAT:
-            return `<input class="${currentName}" type=number bind:value={${currentName}} min=0 >\n`
+            return `<input class="${protoPathToCssPath(currentName)}" type=number bind:value={${currentName}} min=0 >\n`
         default:
             return `<!-- ${currentField.scalar}  ${currentName} -->`
     }
@@ -191,4 +191,6 @@ function defaultRepeatedValue(currentField: DescField) {
     return ""
 }
 
-// type -> { html element class}
+function protoPathToCssPath(input :string){
+    return input.replace(".", "-")
+}

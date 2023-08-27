@@ -6,9 +6,9 @@
 </script>
 
 <div class="Restaurant">
-<p class="Restaurant.title"> Restaurant.title : {Restaurant.title} </p>
-<p class="Restaurant.price"> Restaurant.price : {Restaurant.price} </p>
-<p class="Restaurant.cleanliness"> Restaurant.cleanliness : {Restaurant.cleanliness} </p>
+<p class="Restaurant-title"> Restaurant.title : {Restaurant.title} </p>
+<p class="Restaurant-price"> Restaurant.price : {Restaurant.price} </p>
+<p class="Restaurant-cleanliness"> Restaurant.cleanliness : {Restaurant.cleanliness} </p>
 {#if Restaurant.tags != null}
   {#each Restaurant.tags as tags}
     <p class="tags"> tags : {tags} </p>

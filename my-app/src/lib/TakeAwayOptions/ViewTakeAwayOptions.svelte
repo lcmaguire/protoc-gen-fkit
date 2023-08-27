@@ -5,9 +5,9 @@
 </script>
 
 <div class="TakeAwayOptions">
-<p class="TakeAwayOptions.pickup"> TakeAwayOptions.pickup : {TakeAwayOptions.pickup}  </p>
-<p class="TakeAwayOptions.phone"> TakeAwayOptions.phone : {TakeAwayOptions.phone}  </p>
-<p class="TakeAwayOptions.uber"> TakeAwayOptions.uber : {TakeAwayOptions.uber}  </p>
-<p class="TakeAwayOptions.doorDash"> TakeAwayOptions.doorDash : {TakeAwayOptions.doorDash}  </p>
+<p class="TakeAwayOptions-pickup"> TakeAwayOptions.pickup : {TakeAwayOptions.pickup}  </p>
+<p class="TakeAwayOptions-phone"> TakeAwayOptions.phone : {TakeAwayOptions.phone}  </p>
+<p class="TakeAwayOptions-uber"> TakeAwayOptions.uber : {TakeAwayOptions.uber}  </p>
+<p class="TakeAwayOptions-doorDash"> TakeAwayOptions.doorDash : {TakeAwayOptions.doorDash}  </p>
 </div>
 
