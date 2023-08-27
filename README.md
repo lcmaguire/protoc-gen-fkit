@@ -10,9 +10,14 @@ Message must be parseable to map<string, Value> as it will end up in document.fi
 - point to /src dir
 
 
+# requires
+- firestore db
+- firebase auth
+
 # unsuported features
 
 - oneofs
 - repeated enums
 - nested messages
+- nested enums
 

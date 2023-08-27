@@ -2,3 +2,5 @@
 node_modules
 
 ./my-app/src/lib/firebase/firebase.ts
+
+**/firebase.ts

@@ -1,6 +1,6 @@
 
 run-web:
-	cd ./example/my-app && npm run dev 
+	cd ./my-app && npm run dev 
 
 gen:
 	buf generate
