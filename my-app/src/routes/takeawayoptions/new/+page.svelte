@@ -6,7 +6,7 @@
 	import { dbAdd } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-	import CreateTakeAwayOptions from '$lib/TakeAwayOptions/CreateTakeAwayOptions.svelte';
+	import WriteTakeAwayOptions from '$lib/TakeAwayOptions/WriteTakeAwayOptions.svelte';
 
 	let TakeAwayOptions = {};
 
@@ -22,5 +22,5 @@
 	}
 </script>
 
-<CreateTakeAwayOptions TakeAwayOptions={TakeAwayOptions} writeFunc={writeFunc}/>
+<WriteTakeAwayOptions TakeAwayOptions={TakeAwayOptions} writeFunc={writeFunc}/>
 

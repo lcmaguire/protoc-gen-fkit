@@ -6,7 +6,7 @@
 	import { dbAdd } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-	import CreateRestaurant from '$lib/Restaurant/CreateRestaurant.svelte';
+	import WriteRestaurant from '$lib/Restaurant/WriteRestaurant.svelte';
 
 	let Restaurant = {};
 
@@ -22,5 +22,5 @@
 	}
 </script>
 
-<CreateRestaurant Restaurant={Restaurant} writeFunc={writeFunc}/>
+<WriteRestaurant Restaurant={Restaurant} writeFunc={writeFunc}/>
 

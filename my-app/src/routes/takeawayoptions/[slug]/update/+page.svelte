@@ -6,7 +6,7 @@
 	import { dbSet } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-	import CreateTakeAwayOptions from '$lib/TakeAwayOptions/CreateTakeAwayOptions.svelte';
+	import WriteTakeAwayOptions from '$lib/TakeAwayOptions/WriteTakeAwayOptions.svelte';
 
 	export let data;
 
@@ -16,10 +16,10 @@
 		} catch (e) {
 			console.error(e);
 		} finally {
-			goto(`${data.path}`) 
+			goto(`/${data.path}`) 
 		}
 	}
 </script>
 
-<CreateTakeAwayOptions TakeAwayOptions={data.message} writeFunc={writeFunc}/>
+<WriteTakeAwayOptions TakeAwayOptions={data.message} writeFunc={writeFunc}/>
 

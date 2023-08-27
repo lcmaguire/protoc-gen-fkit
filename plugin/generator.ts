@@ -112,7 +112,7 @@ function generateArrayFunctions(fieldName: string, messageName: string, defaultT
 
 // todo have this be handled by a type.
 function checkWriteType(viewType: string) {
-    return viewType == "Write" || viewType == "Create"
+    return viewType == "Edit"
 }
 
 function getScalarView(currentField: DescField, currentName: string) {
@@ -164,7 +164,7 @@ function editEnumView(currentField: DescField, currentName: string) {
 }
 
 function editMessageView(message: DescMessage, currentName: string) {
-    return `<Write${message.name} bind:${message.name}={${currentName}} />\n`
+    return `<Edit${message.name} bind:${message.name}={${currentName}} />\n`
 }
 
 // todo make a pkg for this.

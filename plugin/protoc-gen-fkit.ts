@@ -13,7 +13,7 @@ import { DescField, DescMessage, DescMethod, DescService, FieldDescriptorProto, 
 import type { Schema } from "@bufbuild/protoplugin/ecmascript";
 
 
-import { genAuthComponent, genFirebase, genLayoutPage, generateRoutes, parseAllcomponent, parseCreateComponent } from "./svelte-templates";
+import { genAuthComponent, genFirebase, genLayoutPage, generateRoutes, genAllComponent, genWriteComponent } from "./svelte-templates";
 import { generateViewForType } from "./generator"
 import { build } from "$service-worker";
 
@@ -50,16 +50,15 @@ function generateCode(schema: Schema, message: DescMessage) {
   const messageName = message.name
   
   generateViewForType(schema, message, "View")
-  generateViewForType(schema, message, "Write")
+  generateViewForType(schema, message, "Edit")
 
-  parseAllcomponent(schema, messageName)
+  genAllComponent(schema, messageName)
 
   const createComponentPath = `lib/${messageName}/Create${messageName}.svelte`
   const createComponent = schema.generateFile(createComponentPath);
-  createComponent.print(parseCreateComponent(messageName))
 
+  genWriteComponent(schema, messageName)
   generateRoutes(schema, messageName)
-
 }
 
 

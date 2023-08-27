@@ -3,25 +3,22 @@ import { Schema } from "@bufbuild/protoplugin"
 import { genMessage } from "./generator";
 
 
-export function parseAllcomponent(schema: Schema, messageName: string) {
+export function genAllComponent(schema: Schema, messageName: string) {
 
   const allComponentPath = `lib/${messageName}/All${messageName}.svelte`
   const allComponent = schema.generateFile(allComponentPath);
 
   const viewName = `View${messageName}`
-  const writeName = `Write${messageName}`
 
   allComponent.print(genMessage)
   allComponent.print(`<script>`)
   allComponent.print(`  // @ts-nocheck`)
   allComponent.print(`  // @ts-ignore`)
   allComponent.print(`  import ${viewName} from '$lib//${messageName}/${viewName}.svelte';`)
-  allComponent.print(`  import ${writeName} from '$lib/${messageName}/${writeName}.svelte';`)
   allComponent.print(`  export let ${messageName};`)
   allComponent.print(`  export let writeFunc;`)
   allComponent.print(`  export let deleteFunc;`)
   allComponent.print(`  export let editable = false;`)
-  allComponent.print(`  function toggle() {editable = !editable;}`)
 
   allComponent.print(`</script>`)
 
@@ -44,10 +41,13 @@ export function parseAllcomponent(schema: Schema, messageName: string) {
   allComponent.print(allTemplate.trim())
 }
 
-export function parseCreateComponent(messageName: string,) {
+export function genWriteComponent(schema: Schema, messageName: string,) {
 
-  const writeName = `Write${messageName}`
-  const allTemplate = `
+  const createComponentPath = `lib/${messageName}/Write${messageName}.svelte`
+  const createComponent = schema.generateFile(createComponentPath);
+
+  const writeName = `Edit${messageName}`
+  const writeTemplate = `
 <script>
 	// @ts-nocheck
 	// @ts-ignore
@@ -63,43 +63,9 @@ export function parseCreateComponent(messageName: string,) {
 <button on:click={writeFunc}> save </button>
 
 `
-
-  return allTemplate.trim()
+  createComponent.print(writeTemplate.trim())
 }
 
-export function protoCamelCase(snakeCase: string): string {
-  let capNext = false;
-  let a = ""
-  for (let i = 0; i < snakeCase.length; i++) {
-    let c = snakeCase.charAt(i);
-    switch (c) {
-      case "_":
-        capNext = true;
-        break;
-      case "0":
-      case "1":
-      case "2":
-      case "3":
-      case "4":
-      case "5":
-      case "6":
-      case "7":
-      case "8":
-      case "9":
-        a = a + c
-        capNext = false;
-        break;
-      default:
-        if (capNext) {
-          capNext = false;
-          c = c.toUpperCase();
-        }
-        a = a + c
-        break;
-    }
-  }
-  return a;
-}
 
 // note, this should probably be an external pkg that is imported and initialized via env vars.
 export function genFirebase(schema: Schema) {
@@ -385,7 +351,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
   slugJs.print(slugJsTemplate)
 
 
-  const createComponentName = `Create${messageName}`
+  const writeComponentName = `Write${messageName}`
 
   const newComponentTemplate = `
   <script>
@@ -395,7 +361,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	import { dbAdd } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-	import ${createComponentName} from '$lib/${messageName}/${createComponentName}.svelte';
+	import ${writeComponentName} from '$lib/${messageName}/${writeComponentName}.svelte';
 
 	let ${messageName} = {};
 
@@ -411,7 +377,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	}
 </script>
 
-<${createComponentName} ${messageName}={${messageName}} writeFunc={writeFunc}/>
+<${writeComponentName} ${messageName}={${messageName}} writeFunc={writeFunc}/>
 `
   const newComponent = schema.generateFile(`${dir}/new/+page.svelte`);
   newComponent.print(newComponentTemplate)
@@ -425,7 +391,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
 	import { dbSet } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-	import ${createComponentName} from '$lib/${messageName}/${createComponentName}.svelte';
+	import ${writeComponentName} from '$lib/${messageName}/${writeComponentName}.svelte';
 
 	export let data;
 
@@ -435,12 +401,12 @@ export function generateRoutes(schema: Schema, messageName: string) {
 		} catch (e) {
 			console.error(e);
 		} finally {
-			goto(\`\${data.path}\`) 
+			goto(\`/\${data.path}\`) 
 		}
 	}
 </script>
 
-<${createComponentName} ${messageName}={data.message} writeFunc={writeFunc}/>
+<${writeComponentName} ${messageName}={data.message} writeFunc={writeFunc}/>
 `
 
   const updateComponent = schema.generateFile(`${dir}/[slug]/update/+page.svelte`);
@@ -449,4 +415,38 @@ export function generateRoutes(schema: Schema, messageName: string) {
   // todo see if parent dir page.js can be used.
   const updateSlugJS = schema.generateFile(`${dir}/[slug]/update/+page.js`);
   updateSlugJS.print(slugJsTemplate)
+}
+
+export function protoCamelCase(snakeCase: string): string {
+  let capNext = false;
+  let a = ""
+  for (let i = 0; i < snakeCase.length; i++) {
+    let c = snakeCase.charAt(i);
+    switch (c) {
+      case "_":
+        capNext = true;
+        break;
+      case "0":
+      case "1":
+      case "2":
+      case "3":
+      case "4":
+      case "5":
+      case "6":
+      case "7":
+      case "8":
+      case "9":
+        a = a + c
+        capNext = false;
+        break;
+      default:
+        if (capNext) {
+          capNext = false;
+          c = c.toUpperCase();
+        }
+        a = a + c
+        break;
+    }
+  }
+  return a;
 }

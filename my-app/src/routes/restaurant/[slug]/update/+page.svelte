@@ -6,7 +6,7 @@
 	import { dbSet } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-	import CreateRestaurant from '$lib/Restaurant/CreateRestaurant.svelte';
+	import WriteRestaurant from '$lib/Restaurant/WriteRestaurant.svelte';
 
 	export let data;
 
@@ -16,10 +16,10 @@
 		} catch (e) {
 			console.error(e);
 		} finally {
-			goto(`${data.path}`) 
+			goto(`/${data.path}`) 
 		}
 	}
 </script>
 
-<CreateRestaurant Restaurant={data.message} writeFunc={writeFunc}/>
+<WriteRestaurant Restaurant={data.message} writeFunc={writeFunc}/>
 

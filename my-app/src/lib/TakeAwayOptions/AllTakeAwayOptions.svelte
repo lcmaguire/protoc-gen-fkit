@@ -3,12 +3,10 @@
   // @ts-nocheck
   // @ts-ignore
   import ViewTakeAwayOptions from '$lib//TakeAwayOptions/ViewTakeAwayOptions.svelte';
-  import WriteTakeAwayOptions from '$lib/TakeAwayOptions/WriteTakeAwayOptions.svelte';
   export let TakeAwayOptions;
   export let writeFunc;
   export let deleteFunc;
   export let editable = false;
-  function toggle() {editable = !editable;}
 </script>
 {#if TakeAwayOptions != null && !editable}
 	<ViewTakeAwayOptions TakeAwayOptions={TakeAwayOptions} />
