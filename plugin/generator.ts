@@ -111,7 +111,6 @@ export function generateViewForType(schema: Schema, message: DescMessage, viewTy
     newFile.print("")
 }
 
-
 function generateArrayFunctions(fieldName: string, messageName: string, defaultType: string) {
     let a = `function push${fieldName}Array() {if (${messageName}.${fieldName} == undefined) {${messageName}.${fieldName} = []};${messageName}.${fieldName} = ${messageName}.${fieldName}.concat(${defaultType})}`
     let b = `function remove${fieldName}Array(index) {${messageName}.${fieldName}.splice(index, 1); ${messageName}.${fieldName} = ${messageName}.${fieldName}}`

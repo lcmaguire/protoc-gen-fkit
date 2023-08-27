@@ -47,14 +47,14 @@ function generateTs(schema: Schema) {
 function generateCode(schema: Schema, message: DescMessage) {
   // generate message for name.
   const messageName = message.name
-  
+
   generateViewForType(schema, message, "View")
   generateViewForType(schema, message, "Edit")
 
   genAllComponent(schema, messageName)
 
   genWriteComponent(schema, messageName)
-  generateRoutes(schema, messageName) // todo have this be route based.
+  generateRoutes(schema, messageName) // todo have this be only for messages that deserve routes.
 }
 
 
