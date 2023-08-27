@@ -10,9 +10,7 @@
 
 <input bind:value={Restaurant.title} >
 
-
 <input type=number bind:value={Restaurant.price} min=0 >
-
 
 <select bind:value={Restaurant.cleanliness}>
 <option value="CLEANLINESS_UNSPECIFIED">CLEANLINESS_UNSPECIFIED</option>
@@ -22,15 +20,13 @@
 <option value="CLEANLINESS_EXCELLENT">CLEANLINESS_EXCELLENT</option>
 </select>
 
-
 {#if Restaurant.tags != null}
   {#each Restaurant.tags as tags, key}
     <input bind:value={tags} >
-    <button on:click={() => removetagsArray(key)}> Remove </button>
+    <button on:click={() => removetagsArray(key)}> Remove from tags</button>
   {/each}
 {/if}
-<button on:click={pushtagsArray}> Add </button>
-
+<button on:click={pushtagsArray}> Add to tags</button>
 
 <WriteTakeAwayOptions bind:TakeAwayOptions={Restaurant.takeAway} />
 
