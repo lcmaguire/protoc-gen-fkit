@@ -6,7 +6,7 @@
 	import { dbSet } from '$lib/firebase/firestore';
 
 	import { goto } from '$app/navigation';
-	import CreateRestaurant from '$lib/Restaurant/CreateRestaurant.svelte';
+	import CreateTakeAwayOptions from '$lib/TakeAwayOptions/CreateTakeAwayOptions.svelte';
 
 	export let data;
 
@@ -21,5 +21,5 @@
 	}
 </script>
 
-<CreateRestaurant Restaurant={data.message} writeFunc={writeFunc}/>
+<CreateTakeAwayOptions TakeAwayOptions={data.message} writeFunc={writeFunc}/>
 

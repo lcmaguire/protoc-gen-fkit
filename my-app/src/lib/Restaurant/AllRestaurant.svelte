@@ -3,17 +3,17 @@
   // @ts-nocheck
   // @ts-ignore
   import ViewRestaurant from '$lib//Restaurant/ViewRestaurant.svelte';
+  import WriteRestaurant from '$lib/Restaurant/WriteRestaurant.svelte';
   export let Restaurant;
   export let writeFunc;
   export let deleteFunc;
-  let editable = false;
-
+  export let editable = false;
+  function toggle() {editable = !editable;}
 </script>
-{#if Restaurant != null }
+{#if Restaurant != null && !editable}
 	<ViewRestaurant Restaurant={Restaurant} />
 {/if}
 
-<!-- todo only allow this & delete to be viewable if auth rules permit it.-->
 {#if  writeFunc != null && !editable }
 	<button on:click={writeFunc}> edit </button>
 {/if}

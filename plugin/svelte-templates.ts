@@ -341,7 +341,7 @@ export function generateRoutes(schema: Schema, messageName: string) {
   // todo set editable / writeFunc based upon if user is permitted to write / edit.
 
 	function writeFunc() {
-    goto(\`/${lowerCaseMessageName}/\${data.uid}\`/update)
+    goto(\`/${lowerCaseMessageName}/\${data.uid}/update\`)
 	}
 
 	async function deleteDoc() {
@@ -384,8 +384,6 @@ export function generateRoutes(schema: Schema, messageName: string) {
   const slugJs = schema.generateFile(`${dir}/[slug]/+page.js`);
   slugJs.print(slugJsTemplate)
 
-
-  // NEW .
 
   const createComponentName = `Create${messageName}`
 
@@ -433,18 +431,22 @@ export function generateRoutes(schema: Schema, messageName: string) {
 
 	async function writeFunc() {
 		try {
-			await dbSet("${lowerCaseMessageName}", ${messageName});
+			await dbSet(\`\${data.path}\`, data.message);
 		} catch (e) {
 			console.error(e);
 		} finally {
-			goto(\`/${lowerCaseMessageName}/\${data.uid}\`) 
+			goto(\`\${data.path}\`) 
 		}
 	}
 </script>
 
-<${createComponentName} ${messageName}={${messageName}} writeFunc={writeFunc}/>
+<${createComponentName} ${messageName}={data.message} writeFunc={writeFunc}/>
 `
 
   const updateComponent = schema.generateFile(`${dir}/[slug]/update/+page.svelte`);
   updateComponent.print(updateComponentTemplate)
+
+  // todo see if parent dir page.js can be used.
+  const updateSlugJS = schema.generateFile(`${dir}/[slug]/update/+page.js`);
+  updateSlugJS.print(slugJsTemplate)
 }

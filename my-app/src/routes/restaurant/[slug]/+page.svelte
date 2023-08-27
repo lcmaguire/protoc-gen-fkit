@@ -11,15 +11,10 @@
 
 	export let data;
 
+  // todo set editable / writeFunc based upon if user is permitted to write / edit.
+
 	function writeFunc() {
-		goto(`/restaurant/${data.uid}/update`) 
-		/*try {
-			await dbSet(`/restaurant/${data.uid}`, data.message);
-		} catch (e) {
-			console.error(e);
-		} finally {
-      goto(`/restaurant/${data.uid}`) 
-		}*/
+    goto(`/restaurant/${data.uid}/update`)
 	}
 
 	async function deleteDoc() {

@@ -11,14 +11,10 @@
 
 	export let data;
 
-	const writeFunc = async function writeDoc() {
-		try {
-			await dbSet(`/takeawayoptions/${data.uid}`, data.message);
-		} catch (e) {
-			console.error(e);
-		} finally {
-      goto(`/takeawayoptions/${data.uid}`) 
-		}
+  // todo set editable / writeFunc based upon if user is permitted to write / edit.
+
+	function writeFunc() {
+    goto(`/takeawayoptions/${data.uid}/update`)
 	}
 
 	async function deleteDoc() {
