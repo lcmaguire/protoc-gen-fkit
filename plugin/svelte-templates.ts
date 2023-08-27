@@ -20,13 +20,8 @@ export function parseAllcomponent(schema: Schema, messageName: string) {
   allComponent.print(`  export let ${messageName};`)
   allComponent.print(`  export let writeFunc;`)
   allComponent.print(`  export let deleteFunc;`)
-  allComponent.print(`  let editable = false;`)
+  allComponent.print(`  export let editable = false;`)
   allComponent.print(`  function toggle() {editable = !editable;}`)
-  allComponent.print(`  // this will toggle from edit view to just view`)
-  allComponent.print(`  function writeWrapper () {`)
-  allComponent.print(`    writeFunc()`)
-  allComponent.print(`    toggle()`)
-  allComponent.print(`  }`)
 
   allComponent.print(`</script>`)
 
@@ -38,18 +33,8 @@ export function parseAllcomponent(schema: Schema, messageName: string) {
 	<${viewName} ${messageName}={${messageName}} />
 {/if}
 
-{#if editable }
-	<${writeName} bind:${messageName}={${messageName}} />
-
-  <br>
-  <br>
-	<button on:click={writeWrapper}> save </button>
-
-  <button on:click={toggle}> cancel </button>
-{/if}
-
 {#if  writeFunc != null && !editable }
-	<button on:click={toggle}> edit </button>
+	<button on:click={writeFunc}> edit </button>
 {/if}
 
 <button on:click={deleteFunc}> Delete </button>
@@ -353,14 +338,10 @@ export function generateRoutes(schema: Schema, messageName: string) {
 
 	export let data;
 
-	const writeFunc = async function writeDoc() {
-		try {
-			await dbSet(\`/${lowerCaseMessageName}/\${data.uid}\`, data.message);
-		} catch (e) {
-			console.error(e);
-		} finally {
-      goto(\`/${lowerCaseMessageName}/\${data.uid}\`) 
-		}
+  // todo set editable / writeFunc based upon if user is permitted to write / edit.
+
+	function writeFunc() {
+    goto(\`/${lowerCaseMessageName}/\${data.uid}\`/update)
 	}
 
 	async function deleteDoc() {
@@ -404,6 +385,8 @@ export function generateRoutes(schema: Schema, messageName: string) {
   slugJs.print(slugJsTemplate)
 
 
+  // NEW .
+
   const createComponentName = `Create${messageName}`
 
   const newComponentTemplate = `
@@ -434,4 +417,34 @@ export function generateRoutes(schema: Schema, messageName: string) {
 `
   const newComponent = schema.generateFile(`${dir}/new/+page.svelte`);
   newComponent.print(newComponentTemplate)
+
+  // update.
+  const updateComponentTemplate = `
+  <script>
+	// @ts-nocheck
+	// @ts-ignore
+
+	import { dbSet } from '$lib/firebase/firestore';
+
+	import { goto } from '$app/navigation';
+	import ${createComponentName} from '$lib/${messageName}/${createComponentName}.svelte';
+
+	export let data;
+
+	async function writeFunc() {
+		try {
+			await dbSet("${lowerCaseMessageName}", ${messageName});
+		} catch (e) {
+			console.error(e);
+		} finally {
+			goto(\`/${lowerCaseMessageName}/\${data.uid}\`) 
+		}
+	}
+</script>
+
+<${createComponentName} ${messageName}={${messageName}} writeFunc={writeFunc}/>
+`
+
+  const updateComponent = schema.generateFile(`${dir}/[slug]/update/+page.svelte`);
+  updateComponent.print(updateComponentTemplate)
 }

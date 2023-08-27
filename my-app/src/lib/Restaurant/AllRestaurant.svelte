@@ -3,17 +3,11 @@
   // @ts-nocheck
   // @ts-ignore
   import ViewRestaurant from '$lib//Restaurant/ViewRestaurant.svelte';
-  import WriteRestaurant from '$lib/Restaurant/WriteRestaurant.svelte';
   export let Restaurant;
   export let writeFunc;
   export let deleteFunc;
   let editable = false;
-  function toggle() {editable = !editable;}
-  // this will toggle from edit view to just view
-  function writeWrapper () {
-    writeFunc()
-    toggle()
-  }
+
 </script>
 {#if Restaurant != null }
 	<ViewRestaurant Restaurant={Restaurant} />
